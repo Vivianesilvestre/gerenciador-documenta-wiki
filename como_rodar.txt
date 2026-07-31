@@ -1,0 +1,259 @@
+========================================================================
+ FERRAMENTA DE GERENCIAMENTO DE INDICADORES — Documenta Wiki (MDS)
+ Como rodar
+========================================================================
+
+ATALHO DE 1 CLIQUE (Windows)
+-----------------------------
+Não quer digitar comando nenhum? Dê duplo clique em:
+
+    Atualizar_relatorios.bat              -> atualiza os 4 relatórios e já
+                                              abre o de indicadores no final
+    Atualizar_apenas_indicadores.bat      -> só o relatório de indicadores
+                                              (o mais demorado dos quatro)
+
+Esses .bat cuidam de checar o Python, instalar a dependência "requests" se
+faltar, rodar o script e abrir o resultado. Não é preciso digitar nada na
+tela: o token de acesso fica no arquivo wiki_token.txt (nesta pasta, fora do
+controle de versão — veja "TOKEN DE ACESSO" mais abaixo).
+
+Os dois .bat agora abrem painel.html no final — uma página única com uma
+aba para cada relatório (Indicadores, Programas, Base de Dados, Ferramentas).
+Clique na aba para trocar o relatório mostrado abaixo; cada um continua com
+sua própria busca, filtros e botão de CSV, exatamente como antes. As abas só
+aparecem para os relatórios que já existem na pasta — se você só atualizou
+indicadores, o painel mostra os outros três com os dados da última vez que
+foram gerados (não precisa rodar tudo de novo só para ver o painel).
+
+Se quiser só reconstruir o painel (por exemplo, depois de apagar um dos
+relatórios), sem rodar a coleta de novo:
+
+        python relatorios_gerenciamento.py --painel
+
+
+NOVIDADES (relatório de indicadores e visual .html)
+----------------------------------------------------
+  - A coluna/filtro "Programa" agora mostra o NOME oficial do programa (ex.:
+    "Cadastro Único"), lido das listas curadas home/DS (vigentes) e home/E
+    (não vigentes), em vez do código curto (ex.: "Cad"). O código continua
+    disponível na coluna "codigo_programa" do .csv/.jsonl. (No modo offline
+    --amostra isso não é possível, pois as listas curadas não estão na
+    amostra — o código aparece como fallback.)
+  - Nova coluna "Ferramenta de consulta": nome + link de tudo que estiver
+    registrado em "Acompanhe o indicador nas ferramentas da SAGICAD" (ex.:
+    VisData, Monitora MDS), tanto na ficha antiga quanto na nova.
+  - Nos .html: os filtros agora são de MÚLTIPLA seleção com busca por texto
+    (clique no botão do filtro, digite para achar a opção, marque uma ou
+    várias) — sem precisar rolar a página inteira. E há um botão
+    "Baixar CSV" que exporta exatamente as linhas visíveis (respeitando a
+    busca e os filtros aplicados).
+  - Corrigido: fichas criadas no editor HTML/rich-text da própria wiki (em
+    vez do editor markdown) apareciam com as tags HTML misturadas no nome/
+    descrição (ex.: "Política Nacional de Cuidados", "Programa Auxílio Gás").
+    Agora o conteúdo é normalizado antes de qualquer extração, então esses
+    casos são lidos corretamente nos 4 relatórios.
+  - Corrigido: os painéis de filtro do relatório de indicadores ficavam
+    todos abertos ao mesmo tempo, sem fechar. Agora cada um fecha os outros
+    e fecha ao clicar fora, no ✕ ou em "Aplicar e fechar".
+  - No relatório de indicadores, o filtro "Status do programa" agora vem
+    ANTES do filtro "Programa", e a lista de programas se restringe
+    automaticamente ao status marcado (ex.: marcar "vigente" deixa só os
+    programas vigentes na lista de "Programa"; desmarcar volta a mostrar
+    todos).
+  - Novo painel.html: uma página com abas (Indicadores / Programas / Base de
+    Dados / Ferramentas) no topo — escolha a aba e o relatório correspondente
+    abre abaixo, sem precisar abrir 4 arquivos separados. Gerado automatica-
+    mente ao rodar qualquer comando do script (ou com --painel, sozinho).
+  - Corrigido: quando o campo "Informações sobre a sintaxe de cálculo do
+    indicador" (ficha antiga) dizia que a sintaxe está indisponível mas com
+    uma redação um pouco diferente das 3 frases-padrão cadastradas (ex.:
+    citando outro sistema/área responsável), o relatório mostrava a coluna
+    "Sintaxe" como "não documentada" (em vez de "Sintaxe indisponível") e
+    isso também rebaixava a "Situação da ficha" para "iniciada" mesmo com
+    todos os campos preenchidos. Agora basta o campo conter as palavras
+    "sintaxe indisponível" para ser reconhecido corretamente nos dois
+    lugares — não precisa mais bater com a frase inteira.
+  - Corrigido (impacto maior): fichas do MODELO NOVO (Blocos A-F) genuinamente
+    preenchidas apareciam como "não documentada"/"iniciada" quando a resposta
+    de algum campo era uma palavra/expressão curta que também aparece como
+    rótulo de opção dentro do texto de instrução (ex.: responder só
+    "Processos/Atividades" no campo A4, ou só "Restrito (login interno)" no
+    campo de acesso da ficha de ferramenta) — o comparador confundia essa
+    resposta válida e curta com a própria instrução ainda não apagada. Esse
+    era também o motivo de até 6 fichas de FERRAMENTAS aparecerem como
+    "iniciada" estando na verdade completas. A comparação agora reconhece a
+    diferença entre "ainda é a instrução" (o trecho coincidente começa no
+    INÍCIO do texto-padrão) e "é uma resposta válida que reaproveita uma
+    palavra do meio da instrução" (não conta mais como pendência).
+  - Relatório de Base de Dados: nova coluna/filtro "Status do programa"
+    (vigente/descontinuado), derivada de estar em home/DS ou home/E.
+  - Relatório de Programas: filtro renomeado de "Situação" para "Status do
+    programa", para ficar consistente com os outros relatórios.
+
+O QUE É
+-------
+Um coletor que lê a Documenta Wiki do MDS (https://wiki-sagi.mds.gov.br) pela
+API GraphQL e gera RELATÓRIOS DE GERENCIAMENTO da situação de preenchimento
+das fichas — não apenas um catálogo do conteúdo, mas um raio-x de quais
+fichas estão documentadas, iniciadas ou vazias, em qual modelo (antigo/novo)
+e se estão publicadas.
+
+Gera 4 relatórios, cada um em .csv, .jsonl e .html:
+
+  1. relatorio_indicadores.{csv,jsonl,html}    -> fichas de INDICADORES
+  2. relatorio_programas.{csv,jsonl,html}      -> fichas de PROGRAMAS/SISTEMAS
+  3. relatorio_base_dados.{csv,jsonl,html}     -> fichas de BASE DE DADOS
+  4. relatorio_ferramentas.{csv,jsonl,html}    -> fichas de FERRAMENTAS (bônus)
+
+  .csv   = abre em Excel/LibreOffice (visão tabular)
+  .jsonl = uma linha JSON por registro, com todos os detalhes por campo
+  .html  = visualizador com busca e filtros; abre em qualquer navegador
+
+Além dos 4, também gera painel.html -> a página com abas que reúne os
+relatórios .html acima num só lugar (é esse arquivo que os .bat abrem).
+
+
+ARQUIVOS DESTA PASTA
+--------------------
+  relatorios_gerenciamento.py  -> o gerador de relatórios (rode este)
+  gerenciamento.py             -> motor de classificação (documentada/
+                                   iniciada/não documentada) — genérico,
+                                   reaproveitado pelos 4 relatórios
+  padroes_fichas.json          -> os textos-padrão (instruções/placeholders)
+                                   de cada campo, por tipo de ficha. Se a
+                                   SAGICAD mudar a redação das instruções nas
+                                   fichas, EDITE ESTE ARQUIVO — não precisa
+                                   tocar no código.
+  coletor_wiki.py               -> acesso à API GraphQL (token, GET de
+                                   páginas) — já existia neste projeto e foi
+                                   reaproveitado para autenticação/consulta
+  catalogo_html.py              -> gera os .html (importado pelos dois
+                                   scripts acima; NÃO apague)
+  exemplo_amostra_*.json        -> fichas fictícias para testar tudo OFFLINE,
+                                   sem precisar de rede nem token (ver abaixo)
+
+Todos os .py precisam ficar na MESMA pasta.
+
+
+REQUISITOS
+----------
+  - Python 3.10 ou superior
+  - A biblioteca "requests":  pip install -r requirements.txt
+    (ou simplesmente:  pip install requests)
+  - Nenhuma outra dependência — o motor de classificação usa só a biblioteca
+    padrão do Python (difflib, re, json).
+
+
+PASSO A PASSO
+-------------
+1) Abra o terminal nesta pasta.
+2) Instale a dependência (uma única vez): pip install requests
+3) Rode o script. São quatro comandos (um por relatório), ou --tudo para
+   rodar os quatro em sequência:
+
+        python relatorios_gerenciamento.py                    # indicadores
+        python relatorios_gerenciamento.py --programas        # programas
+        python relatorios_gerenciamento.py --bd                # base de dados
+        python relatorios_gerenciamento.py --ferramentas       # ferramentas
+        python relatorios_gerenciamento.py --tudo               # os 4 de uma vez
+
+   Cada comando imprime um resumo (quantas fichas, quantas documentadas/
+   iniciadas/não documentadas) e grava os três arquivos de saída na pasta.
+
+   OBS: a coleta de indicadores demora alguns minutos (lê ~1100 fichas, uma a
+   uma, mais as páginas de sintaxe). Os outros três são mais rápidos.
+
+
+TOKEN DE ACESSO (importante)
+----------------------------
+A leitura da wiki exige um token. Ele NÃO fica mais dentro do código — fica
+no arquivo "wiki_token.txt", nesta mesma pasta (um arquivo de texto simples,
+só com o token dentro, sem mais nada). coletor_wiki.py lê esse arquivo
+automaticamente. Esse arquivo está no .gitignore, ou seja, mesmo que esta
+pasta esteja num repositório git, o token NUNCA é enviado junto.
+
+  - Esse token TEM VALIDADE e um dia vai expirar. Quando expirar, peça um novo
+    à equipe gestora da wiki (DMA/SAGICAD, wiki@mds.gov.br) e troque o
+    conteúdo de wiki_token.txt pelo novo token (ou, se preferir, defina a
+    variável de ambiente WIKI_TOKEN — ela tem prioridade sobre o arquivo):
+
+        Linux/macOS:   export WIKI_TOKEN=seu_token_aqui
+        Windows (cmd): set WIKI_TOKEN=seu_token_aqui
+        python relatorios_gerenciamento.py
+
+  - SEGURANÇA: nunca apague a linha "wiki_token.txt" do .gitignore, e nunca
+    cole o token diretamente em nenhum arquivo .py — é isso que permite este
+    projeto ir para um repositório no GitHub (mesmo privado) sem expor a
+    credencial de acesso à wiki.
+
+
+TESTE OFFLINE (sem acessar a rede)
+-----------------------------------
+Para validar o funcionamento sem rede/token, use os arquivos de amostra
+incluídos (fichas 100% fictícias, cobrindo os casos documentada/iniciada/não
+documentada, modelo antigo/novo, ficha publicada/não publicada e sintaxe
+disponível/indisponível):
+
+        python relatorios_gerenciamento.py --amostra exemplo_amostra_indicadores.json
+        python relatorios_gerenciamento.py --programas --amostra exemplo_amostra_programas.json
+        python relatorios_gerenciamento.py --bd --amostra exemplo_amostra_base_dados.json
+
+
+COMO FUNCIONA A CLASSIFICAÇÃO (documentada / iniciada / não documentada)
+--------------------------------------------------------------------------
+Cada campo da ficha é comparado com o texto-padrão que a plataforma deixa
+ali quando o campo nunca foi preenchido (esses textos estão em
+padroes_fichas.json, transcritos dos PDFs de padrão fornecidos). Se o
+conteúdo real do campo ainda é, no essencial, aquele texto-padrão -> campo
+NÃO preenchido. Se foi substituído/complementado com conteúdo real -> campo
+preenchido. A ficha é então:
+
+  não documentada -> nenhum campo avaliado foi preenchido
+  iniciada        -> parte dos campos foi preenchida
+  documentada     -> todos os campos avaliados foram preenchidos
+
+Regras específicas aplicadas (conforme solicitado):
+  - Ficha de indicador MODELO NOVO: os campos do Bloco B e o item "Acompanhe
+    o indicador nas ferramentas da SAGICAD" (dentro do Bloco F) são
+    IGNORADOS na classificação.
+  - Campo "Órgão Superior" (ficha de programa): é um valor fixo institucional
+    (sempre "Ministério do Desenvolvimento e Assistência Social, Família e
+    Combate à Fome (MDS)") — conta como preenchido sempre que não estiver
+    vazio, não é comparado a um texto de instrução.
+  - Campo "Data de Encerramento" (ficha de programa): só entra na avaliação
+    quando o programa está descontinuado (em programas vigentes, ficar em
+    branco é o comportamento correto).
+  - Sintaxe: se o campo citar uma das frases "Sintaxe indisponível —
+    memória de cálculo registrada em planilha/sistemas da SAGICAD" ->
+    classificada como "Sintaxe indisponível". Se houver link para a ficha de
+    sintaxe (home/SI/...), a situação (documentada/iniciada/não documentada)
+    é calculada a partir do preenchimento DAQUELA página.
+  - Status do programa (vigente/descontinuado): combina a lista de
+    Programas Não Vigentes (home/E) com o campo A5 da ficha nova. Se as duas
+    fontes divergirem, o relatório mostra "divergente (A5: x / lista: y)"
+    em vez de escolher uma delas silenciosamente.
+  - Publicação: usa o campo isPublished da própria API do Wiki.js (mais
+    confiável que procurar o aviso "This page is not published." no texto,
+    que normalmente é um elemento da interface, não do conteúdo salvo).
+
+LIMITAÇÃO CONHECIDA: a comparação é uma heurística de similaridade de texto,
+não uma regra exata. Em campos muito curtos que reaproveitam palavras do
+próprio exemplo do texto-padrão (ex.: uma resposta real que também cita
+"município, estado, região, país"), a classificação pode raramente errar
+para "não preenchido". Use os relatórios para PRIORIZAR a revisão manual,
+não como fonte única de verdade. Se a redação das instruções mudar na wiki,
+atualize padroes_fichas.json (não precisa editar o código).
+
+
+ESTRUTURA DA WIKI (para entender as saídas)
+-------------------------------------------
+  home/DS  = programas/sistemas VIGENTES        (ficha do programa)
+  home/E   = programas DESCONTINUADOS/não-vigentes
+  home/F   = FERRAMENTAS informacionais (VisData, painéis, RI, observatórios)
+  home/SI  = SINTAXE de cada indicador (script, Hadoop/Teradata, banco, tabelas)
+  .../BD   = ficha de BASE DE DADOS de cada programa
+
+Dentro de cada programa há a lista de indicadores. O "código" do programa
+(ex.: NBF, BPC, Cad) é a chave que liga o programa aos seus indicadores e
+aparece em todos os relatórios.
+========================================================================

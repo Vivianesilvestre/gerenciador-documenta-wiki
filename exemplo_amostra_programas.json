@@ -1,0 +1,35 @@
+[
+  {
+    "path": "home/DS/Cad",
+    "codigo": "Cad",
+    "programa": "Cadastro Único",
+    "tipo": "sistema",
+    "status": "vigente",
+    "isPublished": true,
+    "authorName": "Ana Paula",
+    "updatedAt": "2026-03-01T10:00:00Z",
+    "content": "Cadastro Único\n\n## Descrição e Objetivo Geral\n\nO Cadastro Único é o principal instrumento de identificação e caracterização das famílias de baixa renda do Brasil, usado para seleção de beneficiários e integração de programas sociais.\n\n## Público-Alvo\n\nFamílias com renda mensal per capita de até meio salário mínimo, ou renda familiar total de até três salários mínimos.\n\n### Órgão Superior\n\nMinistério do Desenvolvimento e Assistência Social, Família e Combate à Fome (MDS)\n\n### Órgão Gestor\n\nSecretaria de Avaliação, Gestão da Informação e Cadastro Único (SAGICAD)\n\n## Atores Envolvidos na Implementação e Execução\n\nCAIXA (agente operador), municípios (cadastramento), DataPrev (processamento).\n\n## Outros Órgãos/Atores Envolvidos\n\nNão há outros atores envolvidos.\n\n## Data de Início/Criação\n\njulho/2001\n\n## Instrumentos Legais Relacionados\n\nDecreto nº 6.135/2007; Lei nº 14.437/2022.\n\n## Forma e Detalhamento da Implementação/Execução\n\nO cadastramento é realizado pelos municípios, que inserem os dados das famílias no sistema, com posterior processamento pela CAIXA e DataPrev.\n\n## Resultados Esperados (Objetivos Específicos e Valor Público Gerado)\n\nAmpliar a identificação de famílias de baixo poder aquisitivo para integração com programas sociais.\n\n## Marcos Relevantes\n\nNão há marco relevante.\n\n## Outras Informações\n\nNão há outras informações complementares.\n\n## Programa Prioritário no Plano Estratégico do Ministério\n\nPrograma Prioritário no Plano Estratégico 2023/2026, conforme Portaria nº 45 de 12/2023.\n\n## Plano Plurianual\n\nNome do Programa no PPA: PROGRAMA 2069 - Segurança Alimentar e Nutricional. Período de referência do PPA: 2024-2027. Objetivo: 0614 - Contribuir para ampliar o acesso à água e a inclusão produtiva das famílias do Cadastro Único.\n"
+  },
+  {
+    "path": "home/E/Vazio",
+    "codigo": "Vazio",
+    "programa": "Programa Vazio",
+    "tipo": "programa",
+    "status": "descontinuado",
+    "isPublished": false,
+    "authorName": "",
+    "updatedAt": "",
+    "content": "Programa Vazio\n\n## Descrição e Objetivo Geral\n\nEm até 10 linhas, preencher com informações gerais sobre o objetivo principal e as principais características do programa.\n\n## Público-Alvo\n\nPreencher este campo com informações sobre todos os perfis de pessoas (físicas e/ou jurídicas) beneficiadas pelo programa.\n\n### Órgão Superior\n\nMinistério do Desenvolvimento e Assistência Social, Família e Combate à Fome (MDS)\n\n## Data de Encerramento e Instrumento Legal que Encerrou o Programa\n\nDeixar esse campo em branco quando o programa ainda estiver vigente.\n"
+  },
+  {
+    "path": "home/DS/PPC",
+    "codigo": "PPC",
+    "programa": "Política Nacional de Cuidados",
+    "tipo": "politica",
+    "status": "vigente",
+    "isPublished": true,
+    "authorName": "Adriana Phillips Ligiero",
+    "updatedAt": "2026-06-23T15:52:27.139Z",
+    "content": "<p>Política Nacional de Cuidados</p> <h1>Descrição e Objetivo Geral</h1> <p style=\"text-align:justify;\">A Política Nacional de Cuidados, instituída por meio da Lei nº 15.069/2024, reconhece o cuidado como um direito.&nbsp;Ela promove a valorização do cuidado como um trabalho, e um bem público.</p> <h1>Público-Alvo</h1> <p style=\"text-align:justify;\">A Política e o Plano Nacional de Cuidados lançam um olhar ao conjunto de pessoas que necessitam de apoios e auxílios para realização das atividades da vida cotidiana, em especial crianças e adolescentes, pessoas idosas e pessoas com deficiência.</p> <h3>Órgão Superior</h3> <p>Ministério do Desenvolvimento e Assistência Social, Família e Combate à Fome (MDS)</p> <h3>Órgão Gestor</h3> <p>Secretaria Nacional de Cuidados e Família</p> <h1>Atores Envolvidos na Implementação e Execução</h1> <p>Ministério das Mulheres, Ministério dos Direitos Humanos e da Cidadania, e outros dezoito ministérios.</p> <h1>Outros Órgãos/Atores Envolvidos</h1> <p>Não há outros atores envolvidos.</p> <h1>Data de Início/Criação</h1> <p>maio/2024</p> <h1>Instrumentos Legais Relacionados</h1> <p>Lei nº 15.069/2024; Decreto nº 12.562/2025; Portaria Interministerial MDS/Mulheres/MDHC nº 35/2025.</p>"
+  }
+]

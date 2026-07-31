@@ -1,0 +1,42 @@
+[
+  {
+    "path": "home/DS/Cad/I/IN001",
+    "title": "IN001 - Taxa de atualização cadastral",
+    "isPublished": true,
+    "authorName": "Maria Souza",
+    "updatedAt": "2026-01-10T12:00:00Z",
+    "content": "## Descrição e Interpretação\n\nO indicador mede o percentual de famílias do Cadastro Único cujo registro foi confirmado ou atualizado nos últimos 24 meses. Quanto maior o valor, maior a proporção de famílias com dados recentes, o que favorece a focalização dos programas sociais.\n\n## Unidade de Medida\n\nPercentual (%) de famílias.\n\n## Domínio (Intervalo de Valores Possíveis)\n\nDe 0% a 100%.\n\n## Nível de Publicização do Indicador\n\nIndicador público.\n\n## Fonte(s) de Dados para o Cálculo do Indicador\n\nCadastro Único (Base Amostral Nacional, CECAD 2)\n\n## Data a partir da qual é possível calcular o indicador\n\n01/01/2012\n\n## Periodicidade de Atualização\n\nMENSAL\n\n## Níveis de Desagregação Territorial\n\nDisponível por município, com recorte adicional por situação de extrema pobreza no Cadastro Único.\n\n## Metodologia (Fórmula de Cálculo)\n\n(Nº de famílias com cadastro atualizado nos últimos 24 meses / Nº total de famílias cadastradas) x 100\n\n## Autoria do Método\n\nDMA/SAGICAD\n\n## Informações Complementares\n\nNão há informações relevantes adicionais.\n\n## Informações sobre a sintaxe de cálculo do indicador\n\nSintaxe disponível - Acesse aqui o link da [sintaxe.](https://wiki-sagi.mds.gov.br/home/SI/Cad/IN001)\n\n## Acompanhe o indicador nas ferramentas da SAGICAD\n\n[VisData](https://aplicacoes.mds.gov.br/sagi/vis/data/) [Monitora MDS](https://monitora.mds.gov.br/painel-cadunico)\n"
+  },
+  {
+    "path": "home/DS/Bolsa/I/IN020",
+    "title": "IN020 - Indicador em branco",
+    "isPublished": false,
+    "authorName": "",
+    "updatedAt": "",
+    "content": "## Descrição e Interpretação\n\nPreencher com a descrição objetiva do fenômeno que o indicador pretende representar. Por exemplo, o indicador representa o percentual de famílias com o cadastro atualizado nos últimos 24 meses.\n\nA interpretação do indicador deve seguir a descrição e ser a mais objetiva possível. Por exemplo, o indicador taxa de atualização cadastral não traz juízo de valor.\n\n## Unidade de Medida\n\nFormato: pessoas, famílias, benefícios, municípios, atendimentos, unidades de atendimento, etc.\nPreencher com informações sobre a unidade de medida do indicador.\n\n## Nível de Publicização do Indicador\n\nIndicador de acesso restrito, porque ainda precisa passar por validação interna.\n\n## Fonte(s) de Dados para o Cálculo do Indicador\n\nPreencher com a informação do nome de todas as bases de dados utilizadas na fórmula do indicador.\n\n## Informações sobre a sintaxe de cálculo do indicador\n\nSintaxe indisponível - memória de cálculo registrada em planilha pela área responsável.\n"
+  },
+  {
+    "path": "home/DS/Cad/I/IN030",
+    "title": "IN030 - Indicador modelo novo completo",
+    "isPublished": true,
+    "authorName": "João Lima",
+    "updatedAt": "2026-02-01T09:00:00Z",
+    "content": "## Bloco A: Identificação e enquadramento programático\n\n‣ A1 - Código único do indicador:\n\nIN030\n\n‣ A2 - Nome oficial do indicador:\n\nFamílias com cadastro atualizado no Cadastro Único\n\n‣ A3 - Política/Programa/Benefício/Serviço/Ação vinculada:\n\nCadastro Único\n\n‣ A4 - Tipologia do indicador:\n\nProdutos\n\n‣ A5 - Status do indicador:\n\nEm produção regular\n\n## Bloco B: Definição, unidade, domínio e regras básicas\n\n‣ B6 - Definição do indicador:\n\nDescrever, de forma objetiva, o que o indicador mede, incluindo o fenômeno observado.\n\n‣ B7 - Interpretação e uso recomendado:\n\nDescrever como o indicador deve ser interpretado.\n\n‣ B8 - Unidade de medida:\n\nInformar a unidade de medida em que o indicador é expresso.\n\n‣ B9 - Domínio:\n\nPreencher com o intervalo de valores possíveis do indicador.\n\n## Bloco C: Unidade estatística, recortes e referência temporal\n\n‣ C10 - Unidade estatística:\n\nFamília\n\n‣ C11 - Cobertura temporal:\n\nInício: 01/2012 Fim: vigente/atualização contínua\n\n‣ C12 - Periodicidade:\n\nMensal\n\n‣ C13 - Defasagem:\n\nSem defasagem\n\n‣ C14 - Desagregações disponíveis: territorial e populacional (quando aplicável).\n\nDisponível por município e por Unidade da Federação; entre público beneficiário, recorte por faixa de renda per capita (até R$ 218) e por situação de extrema pobreza.\n\n## Bloco D: Fontes, especificação de cálculo e área responsável\n\n‣ D15 - Fontes de dados - sistemas e bases utilizados:\n\nCadastro Único\n\n‣ D16 - Especificação de cálculo:\n\nContagem distinta de famílias com cadastro atualizado nos últimos 24 meses dividida pelo total de famílias cadastradas, multiplicado por 100.\n\n‣ D17 - Área responsável:\n\nDMA/SAGICAD\n\n‣ D18 - Implementação - sintaxe/memória de cálculo:\n\nSintaxe disponível - Acesse aqui o link da [sintaxe](https://wiki-sagi.mds.gov.br/home/SI/Cad/IN030). Acesso: interno.\n\n## Bloco E: Qualidade, revisões, comparabilidade e acesso\n\n‣ E19 - Acesso e confidencialidade:\n\nAcesso: Público. Justificativa: indicador agregado, sem identificação individual. Agregação mínima permitida: Município.\n\n‣ E20 - Limitações e cautelas de interpretação:\n\nO indicador reflete registros do Cadastro Único e pode ser influenciado por estratégias de cadastramento nos territórios.\n\n‣ E21 - Política de revisão:\n\nRevisões ocorrem quando há correção de inconsistências identificadas na base. Última revisão em 01/2025, motivo: correção de duplicidades, período afetado: 2023-2024.\n\n‣ E22 - Comparabilidade e coerência:\n\nO indicador é comparável ao longo do tempo, desde que mantidas as definições e regras de cálculo.\n\n## Bloco F: Referências, documentação e governança do metadado\n\n‣ F23 - Documentos e links de referência:\n\nNota Técnica 12/2024 - [link](https://wiki-sagi.mds.gov.br/nota-12-2024)\n\n## Acompanhe o indicador nas ferramentas da SAGICAD:\n\n[VisData](https://aplicacoes.mds.gov.br/sagi/vis/data/)\n"
+  },
+  {
+    "path": "home/DS/Cad/I/IN040",
+    "title": "IN040 - Indicador antigo completo com sintaxe indisponível (redação distinta)",
+    "isPublished": true,
+    "authorName": "Carla Nunes",
+    "updatedAt": "2026-03-01T10:00:00Z",
+    "content": "## Descrição e Interpretação\n\nO indicador mede a quantidade de atendimentos realizados nos CRAS vinculados ao Cadastro Único no período de referência.\n\n## Unidade de Medida\n\nAtendimentos.\n\n## Domínio (Intervalo de Valores Possíveis)\n\nDe 0 a n, sem limite superior definido.\n\n## Nível de Publicização do Indicador\n\nIndicador público.\n\n## Fonte(s) de Dados para o Cálculo do Indicador\n\nSistema de Gestão do CRAS.\n\n## Data a partir da qual é possível calcular o indicador\n\n01/03/2015\n\n## Periodicidade de Atualização\n\nMENSAL\n\n## Níveis de Desagregação Territorial\n\nDisponível por município e por unidade de CRAS.\n\n## Metodologia (Fórmula de Cálculo)\n\nSoma do número de atendimentos registrados no sistema no mês de referência.\n\n## Autoria do Método\n\nDMA/SAGICAD\n\n## Informações Complementares\n\nNão há informações relevantes adicionais.\n\n## Informações sobre a sintaxe de cálculo do indicador\n\nSintaxe indisponível — cálculo realizado por meio de rotina interna da Coordenação-Geral de Monitoramento, sem registro em sistema corporativo.\n"
+  },
+  {
+    "path": "home/E/ExtintoX/I/IN099",
+    "title": "IN099 - Indicador modelo novo em branco",
+    "isPublished": true,
+    "authorName": "",
+    "updatedAt": "",
+    "content": "## Bloco A: Identificação e enquadramento programático\n\n‣ A1 - Código único do indicador:\n\nEm construção\n\n‣ A2 - Nome oficial do indicador:\n\nPreencher com o nome padronizado do indicador, conforme descrito no manual, evitando abreviações ambíguas.\n\n‣ A5 - Status do indicador:\n\nDescontinuado\n\n## Bloco C: Unidade estatística, recortes e referência temporal\n\n‣ C10 - Unidade estatística:\n\nInformar a unidade estatística do indicador, ou seja, o elemento ao qual a informação se refere.\n\n## Bloco D: Fontes, especificação de cálculo e área responsável\n\n‣ D18 - Implementação - sintaxe/memória de cálculo:\n\nPreencha este campo apenas com uma das três opções propostas.\n\n## Bloco F: Referências, documentação e governança do metadado\n\n‣ F23 - Documentos e links de referência:\n\nInformar os documentos e links de referência relacionados ao indicador.\n"
+  }
+]

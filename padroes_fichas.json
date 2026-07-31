@@ -1,0 +1,143 @@
+{
+  "_leia_me": "Textos de referência (instruções/placeholders) transcritos dos PDFs de padrão da Documenta Wiki (MDS). Usados para comparar com o conteúdo real de cada ficha e classificar a situação de preenchimento (não documentada/iniciada/documentada). Se a plataforma mudar os textos-padrão, atualize este arquivo — não é necessário tocar no código.",
+
+  "indicador_antigo": {
+    "descricao": "Preencher com a descrição objetiva do fenômeno que o indicador pretende representar. Por exemplo, o indicador representa o percentual de famílias com o cadastro atualizado nos últimos 24 meses. A interpretação do indicador deve seguir a descrição e ser a mais objetiva possível. Por exemplo, o indicador taxa de atualização cadastral não traz juízo de valor, é difícil dizer se um determinado número é alto ou é baixo, pois trata-se apenas de uma medida. Há outros indicadores, por exemplo, que podem trazer interpretações, tais como o indicador de População municipal, que podem informar o Porte do Município para o SUAS. Neste caso, o indicador População municipal pode ser interpretado da seguinte maneira: até 20.000 habitantes: município de Pequeno Porte I; de 20.001 a 50.000 habitantes: município de Pequeno Porte II; de 50.001 a 100.000 habitantes: município de Médio Porte; de 100.001 a 900.000 habitantes: município de Grande Porte; mais de 900.000 habitantes: metrópole. O IGD-M é outro exemplo, que também pode trazer interpretações: I - IGD-M ≥ 0,55 é requisito para que o município receba recursos de gestão do Cadastro Único.",
+    "unidade": "Formato: pessoas, famílias, benefícios, municípios, atendimentos, unidades de atendimento, etc. Preencher com informações sobre a unidade de medida do indicador. Por exemplo, o indicador Famílias inscritas no Cadastro Único tem por unidade de medida Família. Há outros indicadores, que não possuem unidades de medida, como os índices, taxas ou percentuais.",
+    "intervalo": "Preencher com o intervalo de valores possíveis. Indicadores que não possuem unidade de medida em geral variam de 0 a 1 (ou de 0 a 100%). Alguns indicadores aceitam números negativos, outros aceitam somente números positivos. O intervalo de valores possíveis pode ser descrito de diversas maneiras, como, por exemplo: de -1 a +1; de -infinito a +infinito; de 0 até o total de habitantes do Brasil; de 0 a 5.570.",
+    "status_acesso": "Responder a esse campo copiando o texto de apenas uma das três alternativas abaixo: Indicador público. Indicador de acesso restrito, porque ainda precisa passar por validação interna. Indicador de acesso restrito, porque é um indicador de gestão.",
+    "fonte": "Preencher com a informação do nome de todas as bases de dados utilizadas na fórmula do indicador.",
+    "data_inicio": "Seguir o formato: DD/MM/AAAA. Informar a data a partir de quando há dados disponíveis, suficientes e estruturados de modo adequado para que o indicador seja calculado. Caso haja algum período de referência em que o indicador poderia ter sido calculado, mas não foi, indicar o período e o motivo.",
+    "periodicidade": "Seguir o formato: DIÁRIO, SEMANAL, QUINZENAL, MENSAL, BIMESTRAL, TRIMESTRAL, QUADRIMESTRAL, SEMESTRAL, ANUAL. Preencher com a informação sobre as periodicidades de atualização de todas as bases de dados utilizadas na fórmula do indicador. Por exemplo, alguns indicadores utilizam dados de uma base de atualização anual e outros dados que são atualizados semanalmente.",
+    "desagregacao": "Preencher com a informação sobre a abrangência territorial a que se refere o indicador. Formato: setor censitário, bairro, município, estado, região, país, etc.",
+    "formula": "Preencher com a informação sobre a fórmula de cálculo do indicador, as datas de referência das bases de dados (por exemplo, qual é a defasagem entre o cálculo do indicador e a última data de atualização do indicador).",
+    "autoria": "Preencher com a informação sobre a(s) área(s) responsável(is) por desenvolver a fórmula de cálculo do indicador. Quando for o caso, incluir as referências teóricas utilizadas para o desenvolvimento do método (citar utilizando o padrão ABNT).",
+    "info_adicional": "Este campo é para que sejam informados outros pontos relevantes não incluídos acima. Por exemplo, se houve descontinuidade na produção de dados para o cálculo do indicador; se houve alteração no status de publicização do indicador, etc. Neste campo, podem ser adicionados links para referenciar Notas Técnicas, publicações e outros documentos de acesso público, para subsidiar o leitor da ficha com mais informações sobre o indicador. Caso não haja nenhuma informação relevante adicional, este campo deve ficar vazio ou ser preenchido com Não há informações relevantes adicionais.",
+    "sintaxe": "Preencha este campo com uma das três opções propostas, mantendo apenas o texto entre aspas. No caso de dados disponíveis em banco: Sintaxe disponível - Acesse aqui o link da sintaxe. A Ficha de Sintaxe está disponível apenas para consulta interna ao Ministério. (Para preencher a Ficha, preencha os campos solicitados). No caso de indicador gerado pela área em planilha: Sintaxe indisponível - memória de cálculo registrada em planilha pela área responsável. No caso de indicador gerado pelo DGI, a partir de planilhas compartilhadas pela área responsável: Sintaxe indisponível - memória de cálculo registrada em sistemas da SAGICAD."
+  },
+
+  "indicador_novo": {
+    "a1": "Informar o código único de identificação do indicador, conforme padrão institucional vigente. O código deve ser exclusivo para cada indicador, não podendo ser reutilizado ou alterado ao longo do tempo.",
+    "a2": "Preencher com o nome padronizado do indicador, conforme descrito no manual, evitando abreviações ambíguas. Ressalta-se que o nome deve refletir precisamente o fenômeno medido, facilitando a identificação e eliminando ambiguidades. Portanto, os nomes dos indicadores devem adotar a seguinte estrutura geral: Unidade Estatística + Propriedade da Unidade Estatística + Propriedade do Programa principal + Programa principal + Propriedade do Programa secundário (se houver) + Programa secundário (se houver) + Categoria (se houver) + Temporalidade (casos específicos) + Representação. Para saber mais, acesse o Manual de Padronização dos Nomes de Indicadores de Monitoramento do MDS.",
+    "a3": "Informar a política pública, programa, benefício, serviço ou ação à qual o indicador está diretamente vinculado. Utilize a denominação oficial adotada, evitando siglas e abreviações.",
+    "a4": "Classificar o indicador de acordo com a etapa do Modelo Lógico à qual ele se refere: Insumos: indicadores que medem a disponibilidade e a alocação dos recursos necessários para implementar a política pública. Processos/Atividades: indicadores que medem o desempenho das atividades realizadas na implementação da política pública. Produtos: indicadores que medem as entregas diretas de bens e serviços realizadas pela política pública ao público-alvo. Resultados: indicadores que medem as mudanças observadas no público-alvo decorrentes da implementação da política pública. Impacto: indicadores que medem mudanças estruturais e de longo prazo nas condições sociais, econômicas ou de vulnerabilidade da população associadas à atuação da política pública.",
+    "a5": "Informar a situação atual do indicador, selecionando uma única opção: Em produção regular: indicador calculado e atualizado regularmente, conforme periodicidade definida; Descontinuado: indicador que não é mais produzido ou atualizado.",
+    "b6": "Descrever, de forma objetiva, o que o indicador mede, incluindo o fenômeno observado, a unidade de observação, a população de referência e eventuais recortes relevantes. Quando necessário, complementar com a definição de termos utilizados. O preenchimento pode ser realizado em duas partes: descrição do indicador; observações conceituais (quando aplicável). Evitar a inclusão de fórmula de cálculo, interpretação dos resultados, critérios operacionais, filtros ou procedimentos de apuração.",
+    "b7": "Descrever como o indicador deve ser interpretado, incluindo: o significado de variações (aumento, redução ou estabilidade); a direção desejável (quando aplicável); orientações gerais de uso do indicador. Evitar análises conjunturais ou avaliação de desempenho. O conteúdo deve orientar a leitura adequada do indicador, e não interpretar resultados específicos. Não incluir limitações estruturais ou regras de cálculo do indicador.",
+    "b8": "Informar a unidade de medida em que o indicador é expresso, ou seja, a forma de apresentação do resultado. A unidade de medida deve corresponder ao tipo de valor produzido pelo indicador, tais como: número (contagem); percentual (%); taxa; índice; valor monetário (R$).",
+    "b9": "Preencher com o intervalo de valores possíveis do indicador, considerando sua definição e unidade de medida. O domínio deve indicar os valores mínimos e máximos que o indicador pode assumir, podendo ser descrito de diversas maneiras, como: limitado (exemplo: de 0 a 100%); semi-limitado (exemplo: de 0 a +infinito); ilimitado (exemplo: de -infinito a +infinito); dependente de referência (exemplo: de 0 ao total da população de referência). Utilizar notação padronizada (de X a Y).",
+    "c10": "Informar a unidade estatística do indicador, ou seja, o elemento ao qual a informação se refere, seja para contagem, mensuração ou classificação. A unidade estatística corresponde ao que está sendo contado ou analisado no indicador, tais como: pessoa, família, benefício, município, atendimento, unidade de atendimento, entre outras. Utilizar o termo no singular. Por exemplo, o indicador Famílias inscritas no Cadastro Único tem por unidade de observação Família.",
+    "c11": "Informar o período de referência coberto pelos dados do indicador, indicando datas de início e fim. Seguir o formato: Início: MM/AAAA ou AAAA; Fim: MM/AAAA, AAAA ou vigente/atualização contínua. O período deve corresponder ao intervalo efetivamente coberto pelos dados utilizados no cálculo do indicador. Quando aplicável, indicar interrupções na série, informando os períodos sem dados disponíveis.",
+    "c12": "Informar a frequência com que o indicador é atualizado. Utilizar, preferencialmente, uma das seguintes categorias padronizadas: diária, semanal, mensal, bimestral, trimestral, semestral, anual, irregular. Evitar descrições livres.",
+    "c13": "Informar se existe intervalo de tempo entre o período de referência do indicador e o momento em que ele pode ser calculado ou divulgado. Quando houver defasagem, indicar o prazo aproximado (em dias, meses ou anos) e o motivo principal (exemplo: tempo de processamento, consolidação de bases, validação dos dados). Quando não houver defasagem relevante, informar sem defasagem.",
+    "c14": "Informar as desagregações em que o indicador pode ser apresentado, incluindo: Territorial (obrigatória): níveis geográficos disponíveis (exemplo: setor censitário, bairro, município, estado, região, mesorregião, microrregião, país); Populacional (quando aplicável): características da população que permitem análise desagregada (exemplo: sexo, faixa etária, renda, raça/cor, grupos específicos). Listar as desagregações disponíveis de forma objetiva, separadas por vírgula.",
+    "d15": "Preencher com a informação do nome de todos os sistemas e as bases de dados utilizadas na fórmula do indicador. Não utilizar nomes de áreas, departamentos, coordenações ou equipes como fonte de dados.",
+    "d16": "Descrever a forma de cálculo do indicador de maneira estruturada, incluindo: o tipo de cálculo realizado (exemplo: contagem distinta, soma, média, proporção); fórmula de cálculo (quando aplicável); regras de cálculo (exemplo: critérios de inclusão, agregação, filtros); tratamento de valores ausentes ou nulos; critérios de arredondamento; eventuais exceções. Organizar a informação de forma clara e estruturada, garantindo a reprodutibilidade do cálculo. Todas as regras que afetam o resultado do indicador devem estar descritas exclusivamente neste campo.",
+    "d17": "Preencher com a informação sobre a(s) área(s) responsável(is) pela produção e atualização do indicador. Utilizar a denominação oficial das áreas institucionais, evitando o uso de siglas e nomes de pessoas.",
+    "d18": "Preencha este campo apenas com uma das três opções propostas: Sintaxe disponível - Acesse aqui o link da sintaxe. Acesso: interno. Utilizar quando houver código ou consulta estruturada documentada. A ficha está disponível apenas para consulta interna ao Ministério. Sintaxe indisponível - memória de cálculo registrada em planilha pela área responsável. Utilizar quando o cálculo for realizado em planilhas mantidas pela área responsável. Sintaxe indisponível - memória de cálculo registrada em sistemas da Secretária de Avaliação, Gestão da Informação e Cadastro Único (SAGICAD). Utilizar quando o indicador é gerado pelo Departamento de Gestão da Informação (DGI/SAGICAD), a partir de planilhas fornecidas pela área responsável.",
+    "e19": "Informar o nível de acesso ao indicador, incluindo classificação, justificativa e nível mínimo de agregação permitido. Preencher obrigatoriamente no seguinte formato: Acesso: público ou restrito (indica se o indicador pode ser divulgado ou possui restrições de acesso); Justificativa: (explicar o motivo da classificação, indicando se há ou não risco de identificação ou restrição de uso dos dados); Agregação mínima permitida: (menor nível geográfico ou populacional em que os dados podem ser divulgados sem risco de identificação).",
+    "e20": "Descrever as principais limitações do indicador e cuidados necessários para sua interpretação, incluindo, quando aplicável: possíveis vieses nos dados; subcobertura ou ausência de determinados grupos; fragilidades na coleta, registro ou atualização das informações; efeitos de regras administrativas ou normativas que influenciam o resultado do indicador. Evitar descrições genéricas e indicar, sempre que possível, o impacto dessas limitações na leitura do indicador. Este campo deve concentrar as limitações estruturais do indicador. Evitar repetir orientações gerais de interpretação.",
+    "e21": "Informar sobre revisões programadas, incluindo a atualização do histórico e a forma de comunicação das mudanças. Revisões podem ocorrer, por exemplo, quando: são identificados erros ou inconsistências na base de dados; a base de dados é atualizada com informações retroativas; há mudanças nas regras, normas ou na forma de cálculo do indicador. Quando houver revisão, devem ser registrados: a data, o motivo e o período afetado.",
+    "e22": "Informar se o indicador é comparável ao longo do tempo e entre diferentes recortes territoriais, bem como sua coerência com outros indicadores relacionados. Apontar eventuais restrições ou cuidados necessários para comparações. Este campo deve tratar especificamente da comparabilidade entre períodos, territórios ou indicadores. Limitações gerais devem ser descritas no campo Limitações e cautelas de interpretação.",
+    "f23_documentos": "Informar os documentos e links de referência relacionados ao indicador, tais como notas técnicas, estudos, normativos, relatórios e materiais metodológicos. Para cada item, incluir o nome do documento e o respectivo link de acesso, quando disponível.",
+    "f23_ferramentas_sagicad": "Incluir hiperlink de acesso à ferramenta de visualização (exemplos: Monitora MDS e Observatório do Cadastro Único) ou hiperlink específico no qual o indicador pode ser consultado (Vis Data)."
+  },
+
+  "indicador_novo_campos_status": ["a1","a2","a3","a4","a5","c10","c11","c12","c13","c14","d15","d16","d17","d18","e19","e20","e21","e22","f23_documentos"],
+  "indicador_novo_campos_excluidos": ["b6","b7","b8","b9","f23_ferramentas_sagicad"],
+  "indicador_novo_placeholder_vazio": ["em construção", "em construcao"],
+
+  "programa": {
+    "nome_popular": "Preencher com o nome pelo qual o programa é conhecido por todos, pode ser o nome curto ou fantasia do programa.",
+    "descricao": "Em até 10 linhas, preencher com informações gerais sobre o objetivo principal e as principais características do programa.",
+    "publico_alvo": "Preencher este campo com informações sobre todos os perfis de pessoas (físicas e/ou jurídicas) beneficiadas pelo programa.",
+    "orgao_gestor": "Preencher este campo com o nome da área diretamente responsável pela gestão do programa. Pode ser o nome de uma Coordenação-Geral, de uma Diretoria ou somente da Secretaria. É importante colocar o nome completo, seguido pela sigla, padronizada do nível hierárquico mais alto para o mais baixo.",
+    "atores": "Preencher este campo com informações gerais sobre quem são os principais órgãos ou instituições cruciais para que o programa seja implementado e entre em operação. Por exemplo, se a CAIXA ou a DataPrev for um ator importante para o programa que está sendo documentado, isso deve ser mencionado.",
+    "outros_atores": "Se não houver, inserir o texto Não há outros atores envolvidos. Preencher este campo com informações sobre terceiros que são importantes para o bom funcionamento do programa, por exemplo, os Conselhos (nacional, estaduais, distrital e municipais), algum órgão consultivo, pessoas relevantes na interlocução sobre o assunto, mas que não estejam envolvidas diretamente na gestão do programa.",
+    "data_inicio": "Formato: março/2023. Preencher este campo com a informação sobre a data formal de início do programa, geralmente definida por algum instrumento jurídico (uma Medida-Provisória, uma Lei, um Decreto, uma Portaria).",
+    "legislacao": "Preencher este campo com informações sobre toda a legislação aplicável, tais como leis, decretos, portarias, resoluções, instruções normativas, instruções operacionais. Sempre que possível, incluir o hiperlink de cada uma dessas normas, para que o usuário possa acessar de modo rápido e prático a legislação aplicável. Manter todas as normas, inclusive as revogadas (informando o ato e a data de revogação e incluindo as novas, se houver).",
+    "data_encerramento": "Deixar esse campo em branco quando o programa ainda estiver vigente. Preencher este campo com a data do encerramento formal do programa, e do instrumento jurídico que o encerrou (uma Medida-Provisória, uma Lei, um Decreto, uma Portaria).",
+    "implementacao": "Preencher este campo com informações sobre a forma de funcionamento, encadeando as principais ações a serem realizadas pelos gestores envolvidos, inclusive das esferas municipal e estadual e também pelos beneficiários. Por exemplo, se o beneficiário precisa fazer algum tipo de cadastramento, requerimento ou se o benefício é concedido de modo automático. Sempre que houver, complementar as informações com hiperlinks que apontem para documentos atualizados que já tenham sido produzidos sobre a forma de execução.",
+    "resultados": "Preencher este campo com informações sobre os objetivos específicos e valor público gerado. Os objetivos específicos correspondem a resultados concretos que contribuem para o alcance do objetivo geral. Valor público gerado são os produtos e resultados que representem respostas efetivas e úteis às necessidades ou demandas da população por meio de bens e serviços públicos. Caso o programa tenha alguma documentação que trate da teoria do programa (por exemplo o modelo lógico ou teoria da mudança), inclua o link do material nesse campo também.",
+    "marcos": "Se não houver, inserir o texto Não há marco relevante. Se houver, preencher este campo com informações relevantes que tenham alterado no tempo alguma especificidade do programa e/ou da gestão do programa.",
+    "info_adicional": "Se não houver, inserir o texto Não há outras informações complementares. Se houver, preencher este campo com informações relevantes que tenham alterado no tempo alguma especificidade do programa e/ou da gestão do programa.",
+    "prioritario": "Planejamento Estratégico 2023/2026 ainda não está consolidado. O preenchimento deste item deverá ser feito posteriormente. Informar se o programa é um projeto prioritário no Planejamento Estratégico vigente e qual o período do planejamento, inclusive com o link da referida Portaria.",
+    "ppa": "Plano Plurianual 2024/2027 ainda não está consolidado. O preenchimento deste item deverá ser feito posteriormente. FORMATO NOME DO PROGRAMA Nome do Programa (na nomenclatura do PPA): XXXXX Período de referência do PPA: 20XX-20XX Objetivo:"
+  },
+  "programa_campos_fixos": {
+    "orgao_superior": "Ministério do Desenvolvimento e Assistência Social, Família e Combate à Fome (MDS)"
+  },
+  "programa_campos_condicionais_vigente": ["data_encerramento"],
+  "programa_campos_excluidos": ["nome_popular"],
+
+  "base_dados": {
+    "nome": "O nome do arquivo da Base de Dados.",
+    "responsavel_dados": "Entidades responsáveis pela Base de Dados. Ex: IBGE, CAIXA, DATAPREV, MDS.",
+    "forma_coleta": "O método utilizado para coletar os dados. Incluir link do manual de coleta de dados, formulário, etc.",
+    "local_custodia": "A localização dos dados. Ex: STI, SESAN, etc.",
+    "periodicidade": "O período de tempo no qual a Base de Dados é atualizada.",
+    "periodo_referencia": "Período de quando os dados foram coletados.",
+    "formato": "O tipo de Banco de Dados pela sua estrutura. Ex: estruturado em banco de dados, estruturado em planilha, semiestruturado em planilha e não estruturado.",
+    "forma_acesso": "Métodos de acessar a Base de Dados. Ex: Hadoop/Teradata/envio por email.",
+    "perfis_acesso": "As relações de usuários que a Base de Dados usa para ser operada.",
+    "dicionario": "Acesse o dicionário de dados clicando aqui. Insira o link do dicionário de dados entre os parênteses.",
+    "tratamento_dados": "Métodos usados para o tratamento dos dados. Ex: adequação ao software, conversões de valores, etc. Incluir links de notas técnicas explicativas se houver.",
+    "info_complementares": "Informações adicionais sobre a Base de Dados e possíveis matérias de uso."
+  },
+
+  "ferramenta": {
+    "nome": "Informar o nome da Ferramenta.",
+    "descricao": "Descrever em poucas linhas a ferramenta (O que é a ferramenta? Para que serve? Qual é seu diferencial em relação a outras soluções?).",
+    "para_que_serve": "Descrever a finalidade da solução (Qual problema a ferramenta resolve ou qual necessidade atende?).",
+    "info_gerais": "Abreviações/Sigla (até 10 caracteres): Ex: Monitora MDS. Lançamento (data ou ano e mês): 2019. Unidade responsável: MDS/SAGICAD. Quem cuida/gestão: (descrever todas as unidades que participam da gestão da ferramenta, como permitir o cadastramento de perfis de uso diferenciados, atualizar/validar dados, enviar dados atualizado, etc).",
+    "publico_alvo": "Gestores. Equipes Operacionais. Público Externo (cidadãos/usuários). Outro: Ex: GAIA.",
+    "permite_fazer": "Lista das principais funcionalidades (ex.: consultar relatórios, gerar gráficos, cruzar variáveis, exportar dados).",
+    "resultados": "Tipos de gráficos ou tabelas suportados (mapas, gráficos de barras, linhas, tabelas comparativas etc.) Se há dashboards interativos ou só relatórios estáticos. Exemplos de análises possíveis (cruzamentos, comparações, interpretações de indicadores).",
+    "privacidade": "Quais dados são sensíveis ou protegidos. Políticas de anonimização ou agregação de dados. Quem pode ver quais dados (restrições por perfil de usuário).",
+    "limitacoes": "Exemplo: restrição de acesso, dados parciais, dependência de atualização manual etc.",
+    "fonte_dados": "Fontes de dados usadas (base de cadastro único, sistemas SIS etc.) Dependências de integração (APIs externas, sincronizações).",
+    "tecnologias": "Linguagem/Plataforma: Base de Dados: Outras integrações:",
+    "acesso": "Livre / Público. Restrito (login interno). Confidencial (somente áreas específicas).",
+    "apoio": "Documentação de uso (manuais, tutoriais).",
+    "como_acessar": "Link de acesso. Link de vídeos diversos. Link para central de atendimento.",
+    "info_adicional": "Espaço para informações adicionais relevantes."
+  },
+
+  "sintaxe": {
+    "sintaxe": "Para cálculos automatizados de indicadores, preencher com o script (sintaxe) utilizado, a linguagem utilizada (se em Python, SQL, R ou outro), o nome do software utilizado para o cálculo do indicador no MDS. Para cálculos de indicadores realizados de modo não automatizado, informar quais são os softwares utilizados (por exemplo Excel), qual é o tratamento realizado nos dados (por exemplo, se é feita alguma limpeza nos dados, dizer quais são elas, e informar qual é a área responsável pelo cálculo.",
+    "descricao_sintaxe": "(se necessário) Explicação geral sobre as escolhas feitas para o desenvolvimento da sintaxe.",
+    "autoria_sintaxe": "Preencher com informação sobre qual foi a área responsável pelo desenvolvimento da sintaxe de cálculo do indicador, nos casos em que a fórmula é calculada de modo automatizado. Preencher com informação sobre qual foi a área responsável pelo cálculo do indicador, nos casos em que a fórmula é calculada de modo não automatizado."
+  },
+
+  "frases_sintaxe_indisponivel": [
+    "sintaxe indisponivel - memoria de calculo registrada em planilha pela area responsavel",
+    "sintaxe indisponivel - memoria de calculo registrada em sistemas da sagicad",
+    "sintaxe indisponivel - memoria de calculo registrada em sistemas da secretaria de avaliacao, gestao da informacao e cadastro unico"
+  ],
+
+  "frases_fallback_preenchido": [
+    "nao ha informacoes relevantes adicionais",
+    "nao ha marco relevante",
+    "nao ha outras informacoes complementares",
+    "nao ha outros atores envolvidos",
+    "indicador publico",
+    "indicador de acesso restrito, porque ainda precisa passar por validacao interna",
+    "indicador de acesso restrito, porque e um indicador de gestao",
+    "em producao regular",
+    "descontinuado",
+    "sem defasagem",
+    "nao ha outros orgaos",
+    "nao ha outras informacoes",
+    "sintaxe indisponivel",
+    "insumos",
+    "processos/atividades",
+    "produtos",
+    "resultados",
+    "impacto",
+    "livre / publico",
+    "restrito (login interno)",
+    "confidencial (somente areas especificas)"
+  ],
+
+  "limiar_similaridade": 0.82
+}

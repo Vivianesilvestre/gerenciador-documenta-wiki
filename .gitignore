@@ -1,0 +1,40 @@
+# credencial de acesso à wiki — NUNCA versionar
+wiki_token.txt
+.env
+
+# relatórios gerados com dados reais da wiki (contêm nomes de servidores
+# responsáveis pela última atualização de cada ficha — dado pessoal).
+# Os relatórios de exemplo (exemplo_amostra_*.json) são fictícios e continuam
+# versionados normalmente.
+relatorio_indicadores.csv
+relatorio_indicadores.jsonl
+relatorio_indicadores.html
+relatorio_programas.csv
+relatorio_programas.jsonl
+relatorio_programas.html
+relatorio_base_dados.csv
+relatorio_base_dados.jsonl
+relatorio_base_dados.html
+relatorio_ferramentas.csv
+relatorio_ferramentas.jsonl
+relatorio_ferramentas.html
+painel.html
+
+# catálogos antigos (se ainda gerados por coletor_wiki.py standalone)
+catalogo_wiki_indicadores.csv
+catalogo_wiki_indicadores.jsonl
+catalogo_wiki_indicadores.html
+catalogo_programas.csv
+catalogo_programas.jsonl
+catalogo_programas.html
+catalogo_ferramentas.csv
+catalogo_ferramentas.jsonl
+catalogo_ferramentas.html
+
+# Python
+__pycache__/
+*.pyc
+
+# artefatos de SO
+.DS_Store
+Thumbs.db

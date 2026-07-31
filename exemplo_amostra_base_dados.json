@@ -1,0 +1,16 @@
+[
+  {
+    "path": "home/DS/Cad/BD",
+    "isPublished": true,
+    "authorName": "Carlos Souza",
+    "updatedAt": "2026-02-15T08:00:00Z",
+    "content": "## Nome\n\nbase_cadunico_familias_202601.parquet\n\n## Responsável pelos Dados Primários\n\nCAIXA e MDS/SAGICAD\n\n## Formas de Coleta dos Dados\n\nFormulário físico e aplicativo Cadastro Único preenchido pelo entrevistador municipal.\n\n## Local onde os Dados estão Custodiados\n\nAmbiente de dados do STI/MDS, cluster Hadoop.\n\n## Periodicidade de Atualização dos Dados Custodiados no Ministério\n\nMensal\n\n## Período de Referência\n\nJaneiro/2012 até o mês vigente.\n\n## Formato\n\nEstruturado em banco de dados (tabelas relacionais).\n\n## Formas de Acesso\n\nHadoop/Teradata, mediante solicitação de acesso à STI.\n\n## Perfis de Usuários e Níveis de Acesso\n\nAnalista (leitura), Gestor (leitura e exportação), Administrador (leitura/escrita).\n\n## Dicionário de Variáveis\n\nAcesse o dicionário de dados clicando [aqui](https://wiki-sagi.mds.gov.br/home/DS/Cad/BD/dicionario).\n\n## Tratamento dos Dados\n\nPadronização de campos de texto e conversão de datas para o formato ISO.\n\n## Informações Complementares e Links de Manuais\n\nManual de uso disponível em link interno da SAGICAD.\n"
+  },
+  {
+    "path": "home/E/Vazio/BD",
+    "isPublished": true,
+    "authorName": "",
+    "updatedAt": "",
+    "content": "## Nome\n\nO nome do arquivo da Base de Dados.\n\n## Responsável pelos Dados Primários\n\nEntidades responsáveis pela Base de Dados. Ex: IBGE, CAIXA, DATAPREV, MDS...\n"
+  }
+]
