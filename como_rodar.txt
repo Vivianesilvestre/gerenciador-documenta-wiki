@@ -100,6 +100,19 @@ NOVIDADES (relatório de indicadores e visual .html)
     sem nenhuma ferramenta vinculada aparecem como "Sem ferramenta
     vinculada". Gerado automaticamente junto dos outros relatórios (ou
     isoladamente com --dashboard, sem precisar rodar a coleta de novo).
+  - Corrigido: na ficha NOVA (Bloco F), o texto do link em "Acompanhe o
+    indicador nas ferramentas da SAGICAD" costuma ser uma descrição do
+    INDICADOR (ex.: "Famílias e pessoas incluídas no Cadastro Único"), não
+    o nome da ferramenta — isso fazia o gráfico de ferramentas do dashboard
+    (e a coluna "Ferramenta de consulta") fragmentar em vários nomes
+    errados em vez de agrupar em "VisData". Agora o nome da ferramenta é
+    identificado pelo padrão da URL (ver "ferramentas_dominios" em
+    padroes_fichas.json — edite ali se aparecer uma ferramenta nova ainda
+    não reconhecida), e só usa o texto do link como nome quando ele já é
+    curto (ficha antiga, onde o texto do link já é o nome da ferramenta).
+    IMPORTANTE: essa correção só aparece nos relatórios depois de rodar a
+    coleta de novo (Atualizar_relatorios.bat) — só reconstruir o dashboard
+    (--dashboard) não basta, porque ele lê os .jsonl já salvos.
 
 O QUE É
 -------

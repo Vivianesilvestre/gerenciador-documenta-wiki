@@ -183,6 +183,30 @@ def _secao_apos_titulo(markdown, padrao_titulo):
     return ""
 
 
+def nome_ferramenta_sagicad(nome, url):
+    """Nome OFICIAL da ferramenta a partir do link registrado em "Acompanhe o
+    indicador nas ferramentas da SAGICAD". Na ficha NOVA (Bloco F) o texto do
+    link costuma ser uma descrição do INDICADOR (ex.: "Famílias e pessoas
+    incluídas no Cadastro Único"), não o nome da ferramenta — então primeiro
+    tentamos reconhecer a ferramenta pelo padrão da URL (ver
+    "ferramentas_dominios" em padroes_fichas.json). Na ficha ANTIGA o texto do
+    link já é o nome da ferramenta (ex.: "Visdata"), então isso normalmente
+    nem chega a precisar do fallback por URL."""
+    u = (url or "").lower()
+    for pedaco, canonico in CFG.get("ferramentas_dominios", {}).items():
+        if pedaco.lower() in u:
+            return canonico
+    nome = (nome or "").strip()
+    if nome and len(nome) <= 30:
+        return nome
+    # nome ausente ou longo demais para ser o nome de uma ferramenta (é
+    # provavelmente uma descrição do indicador) e a URL não bateu com
+    # nenhum padrão conhecido -> identifica ao menos pelo domínio da URL.
+    from urllib.parse import urlparse
+    host = urlparse(url).netloc
+    return f"Ferramenta em {host}" if host else (nome or "Ferramenta sem nome identificado")
+
+
 def extrair_ferramentas_sagicad(modelo, campos, markdown):
     """Nome + link registrados em "Acompanhe o indicador nas ferramentas da
     SAGICAD" (ex.: VisData, Monitora MDS, Observatório do Cadastro Único).
@@ -193,7 +217,10 @@ def extrair_ferramentas_sagicad(modelo, campos, markdown):
         texto = campos.get("f23_ferramentas_sagicad", "")
     else:
         texto = _secao_apos_titulo(markdown, r"acompanhe o indicador nas ferramentas da sagicad")
-    return cw.extrair_links(texto) if texto else []
+    links = cw.extrair_links(texto) if texto else []
+    for l in links:
+        l["nome"] = nome_ferramenta_sagicad(l.get("nome", ""), l.get("url", ""))
+    return links
 
 
 def classificar_sintaxe(campo_sintaxe_texto, link_sintaxe, texto_padrao_campo=""):

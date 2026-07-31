@@ -139,5 +139,14 @@
     "confidencial (somente areas especificas)"
   ],
 
-  "limiar_similaridade": 0.82
+  "limiar_similaridade": 0.82,
+
+  "_leia_me_ferramentas_dominios": "Mapa de trecho-da-URL -> nome oficial da ferramenta, usado para identificar a ferramenta em 'Acompanhe o indicador nas ferramentas da SAGICAD'. Necessário porque, na ficha NOVA (Bloco F), o texto do link costuma ser uma descrição do INDICADOR (não o nome da ferramenta) — então o nome certo tem que vir do padrão da URL. Se aparecer uma ferramenta nova, adicione aqui um trecho característico da URL dela apontando para o nome oficial (não precisa tocar no código).",
+  "ferramentas_dominios": {
+    "vis/data": "VisData",
+    "monitoramds": "Monitora MDS",
+    "monitora.mds": "Monitora MDS",
+    "observatoriocadunico": "Observatório do Cadastro Único",
+    "observatorio-cadunico": "Observatório do Cadastro Único"
+  }
 }
