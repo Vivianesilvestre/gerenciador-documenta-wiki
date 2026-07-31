@@ -66,21 +66,7 @@ def _cor_barra(label):
     return _COR_SITUACAO.get(str(label).strip().lower(), NAVY)
 
 
-def render_dashboard(path, *, titulo="Painel Geral · Documenta Wiki (MDS)",
-                      gerado_em=None, cards=None, graficos=None):
-    """
-    Gera uma página de dashboard: cards com números grandes + gráficos de
-    barra horizontal (sem depender de nenhuma biblioteca externa — cada
-    barra é só uma <div> com largura proporcional, calculada em Python).
-
-    cards:    lista de {"label": "Indicadores", "valor": 1121}
-    graficos: lista de {"titulo": "...", "itens": [(label, valor), ...]}
-              "itens" já deve vir na ordem em que você quer exibir.
-    """
-    cards = cards or []
-    graficos = graficos or []
-    gerado = gerado_em or datetime.now().strftime("%d/%m/%Y %H:%M")
-
+def _render_cards_e_graficos(cards, graficos):
     cards_html = "".join(f"""
     <div class="card">
       <div class="card-valor">{c['valor']:,}</div>
@@ -108,6 +94,53 @@ def render_dashboard(path, *, titulo="Painel Geral · Documenta Wiki (MDS)",
       {barras}
     </div>""")
 
+    return f"""<div class="cards">{cards_html}</div>
+  <div class="graficos">{''.join(graficos_html)}</div>"""
+
+
+def render_dashboard(path, *, titulo="Painel Geral · Documenta Wiki (MDS)",
+                      gerado_em=None, secoes=None, padrao=None):
+    """
+    Gera uma página de dashboard: cards com números grandes + gráficos de
+    barra horizontal (sem depender de nenhuma biblioteca externa — cada
+    barra é só uma <div> com largura proporcional, calculada em Python).
+
+    secoes: lista de {"key","label","cards","graficos"} — cada uma vira uma
+            aba (ex.: "Vigente" / "Descontinuado"); só a marcada em `padrao`
+            (ou a primeira) começa visível. Se vier só UMA seção (ou
+            nenhuma key), não mostra abas — comportamento antigo.
+            cards:    lista de {"label": "Indicadores", "valor": 1121}
+            graficos: lista de {"titulo": "...", "itens": [(label, valor), ...]}
+    """
+    secoes = secoes or [{"key": "unica", "label": "", "cards": [], "graficos": []}]
+    padrao = padrao or secoes[0]["key"]
+    gerado = gerado_em or datetime.now().strftime("%d/%m/%Y %H:%M")
+    mostrar_abas = len(secoes) > 1
+
+    abas_html = ""
+    if mostrar_abas:
+        abas_html = "<nav class='abas-dash'>" + "".join(
+            f"""<button type="button" class="aba-dash{' ativa' if s['key'] == padrao else ''}"
+                 data-secao="{_esc(s['key'])}">{_esc(s['label'])}</button>"""
+            for s in secoes) + "</nav>"
+
+    secoes_html = "".join(
+        f"""<div class="secao-dash{'' if s['key'] == padrao else ' oculto'}" data-secao="{_esc(s['key'])}">
+          {_render_cards_e_graficos(s.get('cards'), s.get('graficos'))}
+        </div>"""
+        for s in secoes)
+
+    script = "" if not mostrar_abas else """
+<script>
+  document.querySelectorAll('.aba-dash').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chave = btn.dataset.secao;
+      document.querySelectorAll('.aba-dash').forEach(b => b.classList.toggle('ativa', b === btn));
+      document.querySelectorAll('.secao-dash').forEach(s => s.classList.toggle('oculto', s.dataset.secao !== chave));
+    });
+  });
+</script>"""
+
     doc = f"""<!DOCTYPE html>
 <html lang="pt-br"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -119,6 +152,12 @@ def render_dashboard(path, *, titulo="Painel Geral · Documenta Wiki (MDS)",
   header {{ background:var(--navy); color:#fff; padding:20px 28px; }}
   header h1 {{ margin:0 0 4px; font-size:20px; }}
   header p {{ margin:0; font-size:13px; opacity:.9; }}
+  .abas-dash {{ background:#fff; border-bottom:1px solid #dcdfe4; padding:0 28px; display:flex; gap:4px; }}
+  .aba-dash {{ padding:12px 18px; font-size:14px; border:none; background:none; cursor:pointer;
+               color:#555; border-bottom:3px solid transparent; }}
+  .aba-dash:hover {{ color:var(--navy); }}
+  .aba-dash.ativa {{ color:var(--navy); font-weight:bold; border-bottom-color:var(--gold); }}
+  .oculto {{ display:none; }}
   .wrap {{ padding:22px 28px 40px; }}
   .cards {{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px; }}
   .card {{ background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.08);
@@ -142,10 +181,11 @@ def render_dashboard(path, *, titulo="Painel Geral · Documenta Wiki (MDS)",
   <h1>{_esc(titulo)}</h1>
   <p>Visão geral · gerado em {_esc(gerado)}</p>
 </header>
+{abas_html}
 <div class="wrap">
-  <div class="cards">{cards_html}</div>
-  <div class="graficos">{''.join(graficos_html)}</div>
+  {secoes_html}
 </div>
+{script}
 </body></html>"""
     with open(path, "w", encoding="utf-8") as f:
         f.write(doc)

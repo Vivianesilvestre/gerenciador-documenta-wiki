@@ -169,20 +169,6 @@ def status_a5(campos_novo):
     return None
 
 
-def _secao_apos_titulo(markdown, padrao_titulo):
-    """Pega o texto entre um cabeçalho markdown cujo título casa com
-    `padrao_titulo` e o próximo cabeçalho (ou o fim do texto). Usado para achar
-    a seção "Acompanhe o indicador nas ferramentas da SAGICAD", que pode
-    aparecer tanto na ficha antiga quanto na nova (fora dos itens numerados)."""
-    texto = markdown or ""
-    heads = list(gm._RX_HEADER_MD.finditer(texto))
-    for i, h in enumerate(heads):
-        if re.search(padrao_titulo, h.group(1), re.IGNORECASE):
-            fim = heads[i + 1].start() if i + 1 < len(heads) else len(texto)
-            return texto[h.end():fim]
-    return ""
-
-
 def nome_ferramenta_sagicad(nome, url):
     """Nome OFICIAL da ferramenta a partir do link registrado em "Acompanhe o
     indicador nas ferramentas da SAGICAD". Na ficha NOVA (Bloco F) o texto do
@@ -207,17 +193,36 @@ def nome_ferramenta_sagicad(nome, url):
     return f"Ferramenta em {host}" if host else (nome or "Ferramenta sem nome identificado")
 
 
+_RX_ACOMPANHE_FERRAMENTAS = re.compile(r"acompanhe o indicador nas ferramentas da sagicad", re.IGNORECASE)
+_RX_URL_SOLTA = re.compile(r"https?://[^\s)\]]+")
+
+
 def extrair_ferramentas_sagicad(modelo, campos, markdown):
     """Nome + link registrados em "Acompanhe o indicador nas ferramentas da
     SAGICAD" (ex.: VisData, Monitora MDS, Observatório do Cadastro Único).
-    Na ficha nova já vem isolado em campos['f23_ferramentas_sagicad']; na
-    ficha antiga (quando a seção existir) procura pelo cabeçalho direto no
-    markdown, pois esse campo não faz parte do Padrão de Indicadores antigo."""
-    if modelo == "novo":
-        texto = campos.get("f23_ferramentas_sagicad", "")
-    else:
-        texto = _secao_apos_titulo(markdown, r"acompanhe o indicador nas ferramentas da sagicad")
-    links = cw.extrair_links(texto) if texto else []
+
+    Busca a frase em QUALQUER lugar da página — cabeçalho markdown (como na
+    ficha nova, Bloco F), texto em negrito, item de lista ou parágrafo solto
+    (como costuma acontecer na ficha antiga, onde esse campo não faz parte
+    do Padrão de Indicadores oficial e por isso não tem formatação fixa) —
+    e considera ferramenta QUALQUER link que apareça depois dela, seja em
+    formato markdown [nome](url) ou uma URL solta, até o próximo cabeçalho
+    ou o fim da página. Se não houver nenhum link ali, não é ferramenta
+    vinculada, mesmo que haja outro texto preenchido."""
+    texto = gm._RX_INFOBOX.sub("", gm._RX_COMENTARIO.sub("", markdown or ""))
+    m = _RX_ACOMPANHE_FERRAMENTAS.search(texto)
+    if not m:
+        return []
+    resto = texto[m.end():]
+    prox_cabecalho = gm._RX_HEADER_MD.search(resto)
+    secao = resto[:prox_cabecalho.start()] if prox_cabecalho else resto
+
+    links = cw.extrair_links(secao)
+    if not links:
+        m_url = _RX_URL_SOLTA.search(secao)
+        if m_url:
+            links = [{"nome": "", "url": m_url.group(0).rstrip(").,;"), "tipo": "link"}]
+
     for l in links:
         l["nome"] = nome_ferramenta_sagicad(l.get("nome", ""), l.get("url", ""))
     return links
@@ -707,18 +712,15 @@ def _contagem_ordenada(linhas, chave, ordem):
     return itens
 
 
-def gravar_dashboard(base="dashboard.html"):
-    """Lê os .jsonl já existentes na pasta (não refaz a coleta) e monta os
-    cards + gráficos do dashboard. Pode ser chamado sozinho (--dashboard)
-    para só atualizar essa página a partir do que já foi gerado antes."""
-    indicadores = _ler_jsonl("relatorio_indicadores.jsonl")
-    programas = _ler_jsonl("relatorio_programas.jsonl")
-    ferramentas = _ler_jsonl("relatorio_ferramentas.jsonl")
+def _eh_vigente(valor):
+    return gm.normalizar(valor or "") == "vigente"
 
+
+def _montar_cards_e_graficos(indicadores, programas, n_ferramentas):
     cards = [
         {"label": "Programas / sistemas", "valor": len(programas)},
         {"label": "Indicadores", "valor": len(indicadores)},
-        {"label": "Ferramentas", "valor": len(ferramentas)},
+        {"label": "Ferramentas", "valor": n_ferramentas},
     ]
 
     graficos = []
@@ -747,8 +749,33 @@ def gravar_dashboard(base="dashboard.html"):
             "titulo": "Indicadores vinculados a ferramentas da SAGICAD (por ferramenta)",
             "itens": itens_ferr,
         })
+    return cards, graficos
 
-    catalogo_html.render_dashboard(base, cards=cards, graficos=graficos)
+
+def gravar_dashboard(base="dashboard.html"):
+    """Lê os .jsonl já existentes na pasta (não refaz a coleta) e monta os
+    cards + gráficos do dashboard, com abas Vigente/Descontinuado (aberto
+    por padrão em Vigente). Pode ser chamado sozinho (--dashboard) para só
+    atualizar essa página a partir do que já foi gerado antes.
+    Ferramentas não são filtradas por status — não são vinculadas a um
+    programa específico, então o card mostra o total nas duas abas."""
+    indicadores = _ler_jsonl("relatorio_indicadores.jsonl")
+    programas = _ler_jsonl("relatorio_programas.jsonl")
+    n_ferramentas = len(_ler_jsonl("relatorio_ferramentas.jsonl"))
+
+    prog_vigentes = [p for p in programas if _eh_vigente(p.get("status"))]
+    prog_descontinuados = [p for p in programas if not _eh_vigente(p.get("status"))]
+    ind_vigentes = [r for r in indicadores if _eh_vigente(r.get("status_programa"))]
+    ind_descontinuados = [r for r in indicadores if not _eh_vigente(r.get("status_programa"))]
+
+    cards_v, graf_v = _montar_cards_e_graficos(ind_vigentes, prog_vigentes, n_ferramentas)
+    cards_d, graf_d = _montar_cards_e_graficos(ind_descontinuados, prog_descontinuados, n_ferramentas)
+
+    secoes = [
+        {"key": "vigente", "label": "Vigente", "cards": cards_v, "graficos": graf_v},
+        {"key": "descontinuado", "label": "Descontinuado", "cards": cards_d, "graficos": graf_d},
+    ]
+    catalogo_html.render_dashboard(base, secoes=secoes, padrao="vigente")
     print(f"gerado: {base}")
     return base
 

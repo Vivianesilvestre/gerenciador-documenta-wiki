@@ -113,6 +113,18 @@ NOVIDADES (relatório de indicadores e visual .html)
     IMPORTANTE: essa correção só aparece nos relatórios depois de rodar a
     coleta de novo (Atualizar_relatorios.bat) — só reconstruir o dashboard
     (--dashboard) não basta, porque ele lê os .jsonl já salvos.
+  - Corrigido: a busca por "Acompanhe o indicador nas ferramentas da
+    SAGICAD" agora funciona em QUALQUER formatação (cabeçalho, negrito,
+    texto solto) e em QUALQUER modelo de ficha, e aceita tanto um link
+    markdown [nome](url) quanto uma URL solta no texto. Antes, na ficha
+    antiga, só era reconhecido se estivesse formatado como um cabeçalho —
+    o que raramente é o caso, já que esse campo não faz parte do Padrão de
+    Indicadores oficial (por isso muitos vínculos reais estavam sendo
+    ignorados).
+  - Dashboard: os cards e gráficos agora têm abas "Vigente" / "Descontinuado"
+    (com base no status do PROGRAMA de cada indicador/programa) — abre por
+    padrão em "Vigente". A ficha de Ferramentas não é filtrada por status
+    porque não pertence a nenhum programa específico.
 
 O QUE É
 -------

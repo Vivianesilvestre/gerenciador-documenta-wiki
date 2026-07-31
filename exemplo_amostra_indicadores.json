@@ -32,6 +32,22 @@
     "content": "## Descrição e Interpretação\n\nO indicador mede a quantidade de atendimentos realizados nos CRAS vinculados ao Cadastro Único no período de referência.\n\n## Unidade de Medida\n\nAtendimentos.\n\n## Domínio (Intervalo de Valores Possíveis)\n\nDe 0 a n, sem limite superior definido.\n\n## Nível de Publicização do Indicador\n\nIndicador público.\n\n## Fonte(s) de Dados para o Cálculo do Indicador\n\nSistema de Gestão do CRAS.\n\n## Data a partir da qual é possível calcular o indicador\n\n01/03/2015\n\n## Periodicidade de Atualização\n\nMENSAL\n\n## Níveis de Desagregação Territorial\n\nDisponível por município e por unidade de CRAS.\n\n## Metodologia (Fórmula de Cálculo)\n\nSoma do número de atendimentos registrados no sistema no mês de referência.\n\n## Autoria do Método\n\nDMA/SAGICAD\n\n## Informações Complementares\n\nNão há informações relevantes adicionais.\n\n## Informações sobre a sintaxe de cálculo do indicador\n\nSintaxe indisponível — cálculo realizado por meio de rotina interna da Coordenação-Geral de Monitoramento, sem registro em sistema corporativo.\n"
   },
   {
+    "path": "home/DS/Cad/I/IN041",
+    "title": "IN041 - Indicador antigo com 'Acompanhe...' fora de cabeçalho (texto em negrito)",
+    "isPublished": true,
+    "authorName": "Paulo Andrade",
+    "updatedAt": "2026-04-01T10:00:00Z",
+    "content": "## Descrição e Interpretação\n\nO indicador mede a proporção de famílias do Cadastro Único com renda per capita atualizada no período.\n\n## Unidade de Medida\n\nPercentual (%) de famílias.\n\n## Informações sobre a sintaxe de cálculo do indicador\n\nSintaxe indisponível - memória de cálculo registrada em planilha pela área responsável.\n\n**Acompanhe o indicador nas ferramentas da SAGICAD:** [Visdata](https://aplicacoes.cidadania.gov.br/vis/data3/v.php?vsc=abc123)\n"
+  },
+  {
+    "path": "home/DS/Cad/I/IN042",
+    "title": "IN042 - Indicador antigo com 'Acompanhe...' e URL solta (sem link markdown)",
+    "isPublished": true,
+    "authorName": "Renata Alves",
+    "updatedAt": "2026-04-02T10:00:00Z",
+    "content": "## Descrição e Interpretação\n\nO indicador mede o número de famílias atendidas pelo programa no período de referência.\n\n## Unidade de Medida\n\nFamílias.\n\nAcompanhe o indicador nas ferramentas da SAGICAD: acesse aqui https://aplicacoes.cidadania.gov.br/vis/data3/v.php?vsc=xyz789 para mais detalhes.\n"
+  },
+  {
     "path": "home/E/ExtintoX/I/IN099",
     "title": "IN099 - Indicador modelo novo em branco",
     "isPublished": true,
