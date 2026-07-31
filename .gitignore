@@ -2,6 +2,10 @@
 wiki_token.txt
 .env
 
+# repositório separado (próprio git dele) usado só para publicar o site com
+# dados reais no Cloudflare Pages — não deve entrar no histórico do código
+site_relatorios/
+
 # relatórios gerados com dados reais da wiki (contêm nomes de servidores
 # responsáveis pela última atualização de cada ficha — dado pessoal).
 # Os relatórios de exemplo (exemplo_amostra_*.json) são fictícios e continuam
