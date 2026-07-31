@@ -23,6 +23,7 @@ relatorio_ferramentas.csv
 relatorio_ferramentas.jsonl
 relatorio_ferramentas.html
 painel.html
+dashboard.html
 
 # catálogos antigos (se ainda gerados por coletor_wiki.py standalone)
 catalogo_wiki_indicadores.csv

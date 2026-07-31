@@ -92,6 +92,14 @@ NOVIDADES (relatório de indicadores e visual .html)
     (vigente/descontinuado), derivada de estar em home/DS ou home/E.
   - Relatório de Programas: filtro renomeado de "Situação" para "Status do
     programa", para ficar consistente com os outros relatórios.
+  - Nova aba "Dashboard" (a primeira, já aberta ao entrar no painel.html):
+    cards com o número total de programas, indicadores e ferramentas, e
+    gráficos de barra mostrando quantos indicadores estão em cada situação
+    da ficha, em cada situação da sintaxe, e quantos estão vinculados a
+    cada ferramenta da SAGICAD (VisData, Monitora MDS etc.) — indicadores
+    sem nenhuma ferramenta vinculada aparecem como "Sem ferramenta
+    vinculada". Gerado automaticamente junto dos outros relatórios (ou
+    isoladamente com --dashboard, sem precisar rodar a coleta de novo).
 
 O QUE É
 -------

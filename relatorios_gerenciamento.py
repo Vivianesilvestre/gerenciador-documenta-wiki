@@ -25,6 +25,8 @@ Uso:
     python relatorios_gerenciamento.py --programas --amostra arq.json   # idem, programas
     python relatorios_gerenciamento.py --painel         # só reconstrói painel.html (abas),
                                                           # a partir dos relatórios já existentes
+    python relatorios_gerenciamento.py --dashboard      # só reconstrói dashboard.html (cards e
+                                                          # gráficos), a partir dos .jsonl já existentes
 
 Todo comando acima também atualiza painel.html no final — a página com abas
 que abre cada relatório existente na pasta num iframe (veja como_rodar.txt).
@@ -36,6 +38,7 @@ import json
 import os
 import re
 import sys
+from collections import Counter
 
 import catalogo_html
 import coletor_wiki as cw
@@ -651,8 +654,81 @@ def gravar_ferramentas(linhas, base="relatorio_ferramentas"):
     )
 
 
+# ======================= dashboard (cards + gráficos) =======================
+def _ler_jsonl(caminho):
+    if not os.path.exists(caminho):
+        return []
+    linhas = []
+    with open(caminho, encoding="utf-8") as f:
+        for linha in f:
+            linha = linha.strip()
+            if linha:
+                linhas.append(json.loads(linha))
+    return linhas
+
+
+_ORDEM_SITUACAO = ["documentada", "iniciada", "não documentada"]
+_ORDEM_SINTAXE = ["documentada", "iniciada", "não documentada", "Sintaxe indisponível"]
+
+
+def _contagem_ordenada(linhas, chave, ordem):
+    cont = Counter(r.get(chave, "") or "—" for r in linhas)
+    itens = [(rotulo, cont[rotulo]) for rotulo in ordem if cont.get(rotulo)]
+    # qualquer valor fora da ordem esperada (ex.: "divergente (...)") entra no final
+    extras = [(k, v) for k, v in cont.items() if k not in ordem]
+    itens += sorted(extras, key=lambda kv: -kv[1])
+    return itens
+
+
+def gravar_dashboard(base="dashboard.html"):
+    """Lê os .jsonl já existentes na pasta (não refaz a coleta) e monta os
+    cards + gráficos do dashboard. Pode ser chamado sozinho (--dashboard)
+    para só atualizar essa página a partir do que já foi gerado antes."""
+    indicadores = _ler_jsonl("relatorio_indicadores.jsonl")
+    programas = _ler_jsonl("relatorio_programas.jsonl")
+    ferramentas = _ler_jsonl("relatorio_ferramentas.jsonl")
+
+    cards = [
+        {"label": "Programas / sistemas", "valor": len(programas)},
+        {"label": "Indicadores", "valor": len(indicadores)},
+        {"label": "Ferramentas", "valor": len(ferramentas)},
+    ]
+
+    graficos = []
+    if indicadores:
+        graficos.append({
+            "titulo": "Situação da ficha (indicadores)",
+            "itens": _contagem_ordenada(indicadores, "situacao_ficha", _ORDEM_SITUACAO),
+        })
+        graficos.append({
+            "titulo": "Situação da sintaxe",
+            "itens": _contagem_ordenada(indicadores, "situacao_sintaxe", _ORDEM_SINTAXE),
+        })
+
+        contagem_ferr = Counter()
+        sem_vinculo = 0
+        for r in indicadores:
+            nomes = [x.get("nome", "").strip() for x in (r.get("ferramentas_sagicad") or []) if x.get("nome")]
+            if not nomes:
+                sem_vinculo += 1
+            for n in nomes:
+                contagem_ferr[n] += 1
+        itens_ferr = sorted(contagem_ferr.items(), key=lambda kv: -kv[1])
+        if sem_vinculo:
+            itens_ferr.append(("Sem ferramenta vinculada", sem_vinculo))
+        graficos.append({
+            "titulo": "Indicadores vinculados a ferramentas da SAGICAD (por ferramenta)",
+            "itens": itens_ferr,
+        })
+
+    catalogo_html.render_dashboard(base, cards=cards, graficos=graficos)
+    print(f"gerado: {base}")
+    return base
+
+
 # ======================= painel (abas) =======================
 _PAINEL_CANDIDATOS = [
+    ("dashboard", "Dashboard", "dashboard.html"),
     ("indicadores", "Indicadores", "relatorio_indicadores.html"),
     ("programas", "Programas", "relatorio_programas.html"),
     ("bd", "Base de Dados", "relatorio_base_dados.html"),
@@ -691,6 +767,11 @@ def main():
     args = sys.argv[1:]
 
     if "--painel" in args:
+        gravar_painel()
+        return
+
+    if "--dashboard" in args:
+        gravar_dashboard()
         gravar_painel()
         return
 
@@ -753,6 +834,7 @@ def main():
             print(f"[Ferramentas] total: {len(linhas)} | situação da ficha -> {_resumo(linhas)}")
             print("gerados: relatorio_ferramentas.csv, .jsonl e .html")
 
+    gravar_dashboard()
     gravar_painel()
 
 

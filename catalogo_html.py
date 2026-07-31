@@ -53,6 +53,105 @@ def _texto_busca(linha, colunas):
     return " ".join(partes).lower()
 
 
+_COR_SITUACAO = {
+    "documentada": "#2E7D32",
+    "iniciada": GOLD,
+    "não documentada": "#B03A2E",
+    "sintaxe indisponível": "#6C757D",
+    "sem ferramenta vinculada": "#9AA5B1",
+}
+
+
+def _cor_barra(label):
+    return _COR_SITUACAO.get(str(label).strip().lower(), NAVY)
+
+
+def render_dashboard(path, *, titulo="Painel Geral · Documenta Wiki (MDS)",
+                      gerado_em=None, cards=None, graficos=None):
+    """
+    Gera uma página de dashboard: cards com números grandes + gráficos de
+    barra horizontal (sem depender de nenhuma biblioteca externa — cada
+    barra é só uma <div> com largura proporcional, calculada em Python).
+
+    cards:    lista de {"label": "Indicadores", "valor": 1121}
+    graficos: lista de {"titulo": "...", "itens": [(label, valor), ...]}
+              "itens" já deve vir na ordem em que você quer exibir.
+    """
+    cards = cards or []
+    graficos = graficos or []
+    gerado = gerado_em or datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    cards_html = "".join(f"""
+    <div class="card">
+      <div class="card-valor">{c['valor']:,}</div>
+      <div class="card-label">{_esc(c['label'])}</div>
+    </div>""".replace(",", ".") for c in cards)
+
+    graficos_html = []
+    for g in graficos:
+        itens = g.get("itens") or []
+        maximo = max((v for _, v in itens), default=0) or 1
+        total = sum(v for _, v in itens)
+        barras = "".join(f"""
+        <div class="barra-linha">
+          <div class="barra-rotulo">{_esc(label)}</div>
+          <div class="barra-trilha">
+            <div class="barra-fill" style="width:{(v / maximo * 100):.1f}%; background:{_cor_barra(label)};"></div>
+          </div>
+          <div class="barra-valor">{v:,}</div>
+        </div>""".replace(",", ".") for label, v in itens)
+        if not itens:
+            barras = '<p class="sem-dados">Sem dados ainda — gere o relatório correspondente.</p>'
+        graficos_html.append(f"""
+    <div class="grafico">
+      <h3>{_esc(g.get('titulo', ''))}{f' <span class="grafico-total">({total:,} no total)</span>'.replace(",", ".") if total else ''}</h3>
+      {barras}
+    </div>""")
+
+    doc = f"""<!DOCTYPE html>
+<html lang="pt-br"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{_esc(titulo)}</title>
+<style>
+  :root {{ --navy:{NAVY}; --gold:{GOLD}; }}
+  * {{ box-sizing:border-box; }}
+  body {{ font-family:Arial,Helvetica,sans-serif; margin:0; color:#222; background:#f4f5f7; }}
+  header {{ background:var(--navy); color:#fff; padding:20px 28px; }}
+  header h1 {{ margin:0 0 4px; font-size:20px; }}
+  header p {{ margin:0; font-size:13px; opacity:.9; }}
+  .wrap {{ padding:22px 28px 40px; }}
+  .cards {{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px; }}
+  .card {{ background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.08);
+           padding:18px 26px; min-width:160px; flex:1; text-align:center; }}
+  .card-valor {{ font-size:36px; font-weight:bold; color:var(--navy); line-height:1.1; }}
+  .card-label {{ font-size:13px; color:#666; margin-top:4px; }}
+  .graficos {{ display:flex; flex-direction:column; gap:18px; }}
+  .grafico {{ background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.08); padding:18px 24px; }}
+  .grafico h3 {{ margin:0 0 14px; font-size:15px; color:var(--navy); }}
+  .grafico-total {{ font-size:12px; color:#888; font-weight:normal; }}
+  .barra-linha {{ display:flex; align-items:center; gap:10px; margin-bottom:9px; font-size:13px; }}
+  .barra-rotulo {{ width:220px; flex:none; color:#333; text-align:right; }}
+  .barra-trilha {{ flex:1; background:#eef1f6; border-radius:5px; height:16px; overflow:hidden; }}
+  .barra-fill {{ height:100%; border-radius:5px; min-width:2px; }}
+  .barra-valor {{ width:50px; flex:none; color:#555; font-weight:bold; }}
+  .sem-dados {{ color:#999; font-size:13px; margin:0; }}
+  @media (max-width: 680px) {{ .barra-rotulo {{ width:120px; font-size:12px; }} }}
+</style></head>
+<body>
+<header>
+  <h1>{_esc(titulo)}</h1>
+  <p>Visão geral · gerado em {_esc(gerado)}</p>
+</header>
+<div class="wrap">
+  <div class="cards">{cards_html}</div>
+  <div class="graficos">{''.join(graficos_html)}</div>
+</div>
+</body></html>"""
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(doc)
+    return path
+
+
 def render_painel(path, relatorios, *, titulo="Documenta Wiki (MDS) · Painel de Relatórios"):
     """
     Gera uma página única com abas no topo; cada aba abre, num iframe abaixo,
