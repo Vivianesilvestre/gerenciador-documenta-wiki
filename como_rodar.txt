@@ -125,6 +125,25 @@ NOVIDADES (relatório de indicadores e visual .html)
     (com base no status do PROGRAMA de cada indicador/programa) — abre por
     padrão em "Vigente". A ficha de Ferramentas não é filtrada por status
     porque não pertence a nenhum programa específico.
+  - Corrigido: programas que já foram descontinuados depois de terem sido
+    listados em home/DS (vigentes) apareciam como "vigente" no relatório
+    (ex.: Programa Criança Feliz - PCF, Programa Auxílio Gás - PAG), porque
+    a entrada antiga/desatualizada em home/DS ainda não tinha sido removida
+    e vencia o "empate" contra a entrada correta em home/E. Agora home/E é
+    tratado como a lista autoritativa: se um programa aparece em home/E, ou
+    se o próprio link já aponta para /home/E/..., o status é sempre
+    "descontinuado", mesmo que ainda exista uma entrada desatualizada em
+    home/DS.
+  - Corrigido: "Cadastro Único - Variáveis" não é um programa (é a ficha de
+    dicionário de variáveis do programa Cadastro Único) e não aparece mais
+    na lista de programas.
+  - Corrigido: fichas do MODELO NOVO em que o campo usa "–" (travessão/en-
+    dash) ou marcação em negrito no rótulo do item (ex.: "**A1 – Código
+    único do indicador:**") em vez do hífen simples padrão ("A1 - Código...")
+    não eram reconhecidas — todos os campos apareciam vazios e a ficha caía
+    como "não documentada" mesmo estando completamente preenchida (caso
+    relatado: IN213). Agora o reconhecimento do item aceita hífen, travessão
+    (– ou —) ou dois-pontos como separador, e aceita o rótulo em negrito.
 
 O QUE É
 -------

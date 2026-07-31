@@ -433,9 +433,15 @@ def coletar_de_amostra(arquivo):
 # descrição/objetivo, legislação, público-alvo, governança, datas, etc. O SLUG é o
 # código que liga o programa aos seus indicadores (home/{DS,E}/SLUG/I/IN###).
 RX_ITEM_PROG = re.compile(r"\[([^\]]+)\]\(/home/(DS|E|SI)/([A-Za-z0-9_&.-]+)\)")
-_SLUG_NAO_PROG = {"i", "bd", "si", "ds", "e", "pe", "cc", "f"}
-# fontes das listas curadas e o status que cada uma carimba
-_LISTAS_PROG = (("home/DS", "vigente"), ("home/SI", "vigente"), ("home/E", "descontinuado"))
+# "cadv" = Cadastro Único - Variáveis: não é um programa, é a ficha de
+# dicionário de variáveis do programa Cadastro Único (link listado junto com
+# os programas em home/DS, mas sem ficha própria de programa).
+_SLUG_NAO_PROG = {"i", "bd", "si", "ds", "e", "pe", "cc", "f", "cadv"}
+# fontes das listas curadas e o status que cada uma carimba. home/E vem
+# PRIMEIRO: é a lista autoritativa de descontinuados — um programa que
+# aparece em home/E deve vencer o empate mesmo se ainda houver uma entrada
+# desatualizada (não removida) em home/DS.
+_LISTAS_PROG = (("home/E", "descontinuado"), ("home/SI", "vigente"), ("home/DS", "vigente"))
 
 
 def parse_lista_curada(content, fonte="", status="vigente"):
@@ -459,9 +465,13 @@ def parse_lista_curada(content, fonte="", status="vigente"):
         if slug.lower() in _SLUG_NAO_PROG:
             continue
         root = "E" if root == "E" else "DS"
+        # o link já aponta para /home/E/... => a ficha mora hoje na área de
+        # descontinuados, então o status é descontinuado independente de qual
+        # lista (DS ou E) trouxe essa entrada.
+        status_real = "descontinuado" if root == "E" else status
         selo = "ouro" if "ouro" in h else ("prata" if "prata" in h else "")
         regs.append({"codigo": slug, "programa": m.group(1).strip(" *`"), "tipo": tipo,
-                     "selo": selo, "status": status, "root": root,
+                     "selo": selo, "status": status_real, "root": root,
                      "url": f"{BASE}/home/{root}/{slug}", "fonte": fonte})
     return regs
 
@@ -479,7 +489,7 @@ def _contar_indicadores(paginas):
 def _mapa_status(todas):
     """slug (minúsculo) -> 'vigente'/'descontinuado', a partir das listas curadas."""
     mapa = {}
-    for path, status in (("home/DS", "vigente"), ("home/E", "descontinuado")):
+    for path, status in (("home/E", "descontinuado"), ("home/DS", "vigente")):
         p = next((q for q in todas if q["path"] == path), None)
         if p:
             for r in parse_lista_curada(conteudo_pagina(p["id"])["content"], "", status):

@@ -223,8 +223,12 @@ def extrair_por_item_numerado(markdown, codigos):
     `codigos` é a lista de prefixos esperados, ex.: ["A1","A2",...,"F23"].
     """
     texto = _RX_INFOBOX.sub("", _RX_COMENTARIO.sub("", markdown or ""))
+    # separador aceita hífen, en-dash, em-dash ou dois-pontos (autocorreção do
+    # Word/editor às vezes troca "-" por "–"/"—"); marcador antes do código
+    # aceita vários símbolos de lista OU negrito (ex.: "**A1 – Código...**").
     rx_item = re.compile(
-        r"(?m)^[ \t]*[▸‣►\-*]?[ \t]*(" + "|".join(re.escape(c) for c in codigos) + r")\b[ \t]*-[^\n]*$",
+        r"(?m)^[ \t]*[▸‣►\-*•]{0,3}[ \t]*(" + "|".join(re.escape(c) for c in codigos)
+        + r")\b[ \t]*[-–—:][ \t]*[^\n]*$",
         re.IGNORECASE)
     marcas = list(rx_item.finditer(texto))
     campos = {}
@@ -239,7 +243,8 @@ def extrair_por_item_numerado(markdown, codigos):
 
 
 # ======================= detecção do modelo da ficha (antigo x novo) =======================
-_RX_MODELO_NOVO = re.compile(r"bloco\s+[a-f]\s*[:\-]|(?:^|\n)\s*[▸‣►]?\s*[a-f]\d{1,2}\s*-", re.IGNORECASE)
+_RX_MODELO_NOVO = re.compile(
+    r"bloco\s+[a-f]\s*[:\-–—]|(?:^|\n)\s*[▸‣►\-*•]{0,3}\s*[a-f]\d{1,2}\s*[-–—:]", re.IGNORECASE)
 
 
 def detectar_modelo(markdown):
