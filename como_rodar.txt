@@ -11,6 +11,9 @@ Não quer digitar comando nenhum? Dê duplo clique em:
                                               abre o de indicadores no final
     Atualizar_apenas_indicadores.bat      -> só o relatório de indicadores
                                               (o mais demorado dos quatro)
+    Publicar_no_site.bat                  -> atualiza os 4 relatórios E
+                                              publica no site online (veja
+                                              "PUBLICAR NA WEB" mais abaixo)
 
 Esses .bat cuidam de checar o Python, instalar a dependência "requests" se
 faltar, rodar o script e abrir o resultado. Não é preciso digitar nada na
@@ -243,6 +246,40 @@ próprio exemplo do texto-padrão (ex.: uma resposta real que também cita
 para "não preenchido". Use os relatórios para PRIORIZAR a revisão manual,
 não como fonte única de verdade. Se a redação das instruções mudar na wiki,
 atualize padroes_fichas.json (não precisa editar o código).
+
+
+PUBLICAR NA WEB (site com login, para acesso remoto aos relatórios)
+--------------------------------------------------------------------
+Os relatórios têm dados reais (nomes de servidores) — por isso o site fica
+atrás de um login por e-mail (Cloudflare Access), não é um link aberto.
+
+CONFIGURAÇÃO (uma única vez):
+  1. Crie uma conta grátis em https://dash.cloudflare.com/sign-up
+  2. Crie um repositório PRIVADO no GitHub só para o site (ex.:
+     "documenta-wiki-site") e envie a pasta "site_relatorios" para ele:
+         cd site_relatorios
+         git remote add origin <URL-DO-NOVO-REPOSITORIO>
+         git branch -M main
+         git push -u origin main
+  3. No painel da Cloudflare: Workers & Pages -> Create -> Pages ->
+     Connect to Git -> autorize o GitHub -> escolha o repositório
+     "documenta-wiki-site" -> Framework preset: None -> Build command:
+     (deixe vazio) -> Build output directory: / -> Save and Deploy.
+  4. Você recebe uma URL tipo https://documenta-wiki-site.pages.dev
+  5. Proteja essa URL com login: no menu da Cloudflare, vá em Zero Trust ->
+     Access -> Applications -> Add an application -> Self-hosted -> aponte
+     para o domínio do passo 4 -> crie uma política "Allow" com
+     Include -> Emails -> adicione seu e-mail (e de quem mais precisar
+     acessar) -> Save. Pronto: só quem estiver na lista consegue abrir o
+     link, e precisa confirmar um código enviado por e-mail.
+
+DEPOIS DE CONFIGURADO, para atualizar o site:
+     Dê duplo clique em Publicar_no_site.bat — ele gera os 4 relatórios de
+     novo e envia (git push) para o repositório do site. A Cloudflare
+     publica a nova versão automaticamente em 1-2 minutos.
+
+IMPORTANTE: o repositório "site_relatorios" é separado do repositório do
+código (o de GitHub que já subimos antes) — mantenha os dois PRIVADOS.
 
 
 ESTRUTURA DA WIKI (para entender as saídas)
