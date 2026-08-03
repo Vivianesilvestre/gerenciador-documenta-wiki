@@ -154,8 +154,7 @@ NOVIDADES (relatório de indicadores e visual .html)
     classificava como não preenchido. Agora o sistema reconhece essa
     caixinha como uma marcação estrutural: se sobrar qualquer texto de
     resposta FORA dela, o campo conta como preenchido, não importa o que
-    ainda esteja dentro da caixinha nem o tamanho da resposta. Isso também
-    corrigiu indicadores como o IN212 e o IN213 do Cadastro Único.
+    ainda esteja dentro da caixinha nem o tamanho da resposta.
   - Retirado o filtro "Selo" do relatório de Programas.
   - Corrigido: no gráfico do Dashboard "Indicadores vinculados a ferramentas
     da SAGICAD", grafias diferentes do mesmo nome (ex.: "Vis Data", "Visdata",
@@ -164,6 +163,24 @@ NOVIDADES (relatório de indicadores e visual .html)
     somada a nenhuma das já cadastradas em "ferramentas_dominios" (em
     padroes_fichas.json), cadastre o alias em "ferramentas_nomes_alias" no
     mesmo arquivo.
+  - Corrigido (indicadores tipo IN212/IN213 do Cadastro Único): esses
+    indicadores usam um modelo de ficha DIFERENTE do padrão — a "ficha de
+    variável" (ex.: GPTEs, faixas de renda "categoria"), com Blocos A a G e
+    campos A1-A3/B4-B7/C8/D9/E10-E11/F12-F15/G16, em vez do padrão A1-A5/
+    B6-B9/C10-C14/D15-D18/E19-E22/F23. Como os códigos se parecem (A1, A2,
+    A3, B6, B7 existem nos dois, com significados diferentes), o sistema
+    misturava tudo no campo A3 e nunca encontrava os campos exclusivos do
+    indicador padrão (A4, A5, C10 em diante) — por isso a ficha nunca passava
+    de "não documentada"/"iniciada", mesmo completa. Agora esse modelo é
+    reconhecido separadamente ("Modelo da ficha" = novo_variavel) e avaliado
+    pelos seus próprios campos. O campo A1 (Código único da variável) foi
+    excluído da conta de "documentada" porque, no exemplo conferido (IN212),
+    a ficha estava completa mas esse código institucional ainda não tinha
+    sido atribuído — se isso não for o padrão esperado, ajuste
+    "variavel_campos_excluidos" em padroes_fichas.json. A ficha de variável
+    ainda não tem campo de sintaxe/ferramenta SAGICAD no template, então
+    essas duas colunas aparecem como "não documentada"/vazias para ela —
+    isso é esperado, não é erro.
 
 O QUE É
 -------

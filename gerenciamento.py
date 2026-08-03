@@ -148,7 +148,8 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
          Caso contrário, preenchido.
     """
     fora, dentro = _separar_caixa_orientacao(conteudo)
-    if dentro:
+    tem_caixa = bool(dentro)
+    if tem_caixa:
         # havia caixinha(s) de orientação neste campo: texto fora dela já
         # conta como resposta real, não importa o que sobrou dentro.
         if normalizar(fora):
@@ -171,7 +172,13 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
 
     ref = normalizar(texto_padrao)
     if not ref:
-        return True
+        # não temos o texto-padrão exato deste campo para comparar (ex.: um
+        # tipo de ficha ainda não catalogado em padroes_fichas.json). Se havia
+        # uma caixinha de orientação e nada foi digitado fora dela, o mais
+        # seguro é assumir que ainda é a instrução (é para isso que a
+        # caixinha existe); sem caixinha nenhuma, não há como saber — mantém
+        # o comportamento de sempre (considera preenchido).
+        return not tem_caixa
 
     # só conta blocos de match "de peso" (>=10 caracteres); combinações curtas
     # como "de", "a", "municipio" aparecem por acaso em qualquer texto longo e

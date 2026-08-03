@@ -45,7 +45,10 @@
 
   "indicador_novo_campos_status": ["a1","a2","a3","a4","a5","c10","c11","c12","c13","c14","d15","d16","d17","d18","e19","e20","e21","e22","f23_documentos"],
   "indicador_novo_campos_excluidos": ["b6","b7","b8","b9","f23_ferramentas_sagicad"],
-  "indicador_novo_placeholder_vazio": ["em construção", "em construcao"],
+  "indicador_novo_placeholder_vazio": ["em construção", "em construcao", "proposta em construcao"],
+
+  "_leia_me_variavel_campos_excluidos": "Campo(s) da ficha de VARIÁVEL (ex.: GPTEs, faixas de renda 'categoria' — Blocos A-G, diferente da ficha padrão de indicador) que não entram na conta de 'documentada'. A1 (Código único da variável) foi excluído porque, no exemplo real conferido (IN212), a ficha já está com todo o conteúdo preenchido mas A1 ainda mostra 'Proposta em construção' — parece ser um código institucional ainda não atribuído em toda a série, não uma pendência de preenchimento do resto da ficha.",
+  "variavel_campos_excluidos": ["a1"],
 
   "programa": {
     "nome_popular": "Preencher com o nome pelo qual o programa é conhecido por todos, pode ser o nome curto ou fantasia do programa.",

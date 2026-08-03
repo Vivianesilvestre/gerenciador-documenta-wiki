@@ -51,6 +51,22 @@ BASE = cw.BASE
 CODIGOS_FICHA_NOVA = ["A1", "A2", "A3", "A4", "A5", "B6", "B7", "B8", "B9",
                       "C10", "C11", "C12", "C13", "C14", "D15", "D16", "D17", "D18",
                       "E19", "E20", "E21", "E22", "F23"]
+# códigos exclusivos da ficha de indicador "padrão" (não existem na ficha de
+# variável) — usados para diferenciar os dois submodelos depois de extrair.
+# IMPORTANTE: a1/a2/a3/b6/b7 existem nos DOIS submodelos (com significados
+# diferentes), então não contam como exclusivos de nenhum dos dois.
+_CODIGOS_EXCLUSIVOS_INDICADOR = {"a4", "a5", "b8", "b9", "c10", "c11", "c12", "c13", "c14",
+                                  "d15", "d16", "d17", "d18", "e19", "e20", "e21", "e22", "f23"}
+
+# ======================= códigos da ficha de VARIÁVEL (ex.: GPTEs, faixas de
+# renda "categoria") — mesma ideia de Blocos com itens numerados, mas com um
+# conjunto de campos DIFERENTE do indicador padrão, incluindo um Bloco G que
+# não existe no modelo padrão (A1-A5/B6-B9/.../F23) =======================
+CODIGOS_FICHA_VARIAVEL = ["A1", "A2", "A3", "B4", "B5", "B6", "B7", "C8", "D9",
+                          "E10", "E11", "F12", "F13", "F14", "F15", "G16"]
+_CODIGOS_EXCLUSIVOS_VARIAVEL = {"b4", "b5", "c8", "d9", "e10", "e11", "f12", "f13", "f14", "f15", "g16"}
+CAMPOS_FICHA_VARIAVEL = ["a1", "a2", "a3", "b4", "b5", "b6", "b7", "c8", "d9",
+                         "e10", "e11", "f12", "f13", "f14", "f15", "g16"]
 
 # rótulos (cabeçalhos) da ficha de PROGRAMA — regex casa o PREFIXO do cabeçalho
 ROTULOS_PROGRAMA = [
@@ -138,21 +154,47 @@ def _dividir_f23(corpo):
 
 
 def extrair_campos_indicador(markdown):
-    """Detecta o modelo (antigo/novo) e extrai os campos correspondentes.
-    Retorna (modelo, campos:dict)."""
+    """Detecta o modelo (antigo/novo/novo_variavel) e extrai os campos
+    correspondentes. Retorna (modelo, campos:dict).
+
+    A ficha NOVA tem dois formatos de Blocos com item numerado em uso: o
+    padrão de INDICADOR (A1-A5/B6-B9/C10-C14/D15-D18/E19-E22/F23) e o de
+    VARIÁVEL — ex.: GPTEs, faixas de renda "categoria" (A1-A3/B4-B7/C8/D9/
+    E10-E11/F12-F15/G16, com um Bloco G que o indicador padrão não tem).
+    Como os dois usam letras/números parecidos, primeiro tentamos extrair
+    pelo conjunto do indicador padrão e só trocamos para o de variável se
+    nenhum código EXCLUSIVO do indicador padrão foi encontrado mas algum
+    código exclusivo de variável foi — assim uma ficha de variável não é
+    tratada (errado) como indicador padrão com a maioria dos campos vazios."""
     modelo = gm.detectar_modelo(markdown)
-    if modelo == "novo":
-        brutos = gm.extrair_por_item_numerado(markdown, CODIGOS_FICHA_NOVA)
-        campos = {k: v for k, v in brutos.items() if k != "f23"}
-        doc, ferr = _dividir_f23(brutos.get("f23", ""))
-        campos["f23_documentos"] = doc
-        campos["f23_ferramentas_sagicad"] = ferr
-    else:
+    if modelo != "novo":
         campos = gm.extrair_por_cabecalho(markdown, cw.ROTULOS)
+        return modelo, campos
+
+    brutos = gm.extrair_por_item_numerado(markdown, CODIGOS_FICHA_NOVA)
+    if not (_CODIGOS_EXCLUSIVOS_INDICADOR & brutos.keys()):
+        brutos_var = gm.extrair_por_item_numerado(markdown, CODIGOS_FICHA_VARIAVEL)
+        if _CODIGOS_EXCLUSIVOS_VARIAVEL & brutos_var.keys():
+            return "novo_variavel", brutos_var
+
+    campos = {k: v for k, v in brutos.items() if k != "f23"}
+    doc, ferr = _dividir_f23(brutos.get("f23", ""))
+    campos["f23_documentos"] = doc
+    campos["f23_ferramentas_sagicad"] = ferr
     return modelo, campos
 
 
 def classificar_situacao_ficha_indicador(modelo, campos):
+    if modelo == "novo_variavel":
+        # ainda não temos os textos-padrão exatos desse submodelo cadastrados
+        # em padroes_fichas.json (só temos exemplos já preenchidos, não a
+        # ficha em branco) — a classificação usa a marcação da caixinha de
+        # orientação (ver gerenciamento.py) para decidir sem precisar do
+        # texto exato: campo com resposta fora da caixinha = preenchido;
+        # caixinha intacta sem nada fora = não preenchido.
+        excluidos = set(CFG.get("variavel_campos_excluidos", []))
+        campos_avaliar = [k for k in CAMPOS_FICHA_VARIAVEL if k not in excluidos]
+        return gm.classificar_ficha(campos, {}, campos_avaliar, CFG)
     if modelo == "novo":
         return gm.classificar_ficha(
             campos, CFG["indicador_novo"], CFG["indicador_novo_campos_status"], CFG)
