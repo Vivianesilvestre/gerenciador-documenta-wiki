@@ -192,6 +192,14 @@ NOVIDADES (relatório de indicadores e visual .html)
     excluir "nome_popular"). Se esses planejamentos já tiverem sido
     consolidados, remova os dois de "programa_campos_excluidos" em
     padroes_fichas.json.
+  - Corrigido (Ferramentas): confirmado com o exemplo real do Mapa Social MDS
+    que a correção da caixinha de orientação já estava funcionando — o que
+    travava a ficha em "iniciada" era só o campo "Observações complementares"
+    ficando genuinamente em branco (o template de Ferramentas, diferente de
+    Programas/Indicadores, não tem a convenção de escrever "Não há
+    informações complementares" quando não houver nada a acrescentar). Esse
+    campo foi excluído da conta de "documentada" (ver
+    "ferramenta_campos_excluidos" em padroes_fichas.json).
 
 O QUE É
 -------
