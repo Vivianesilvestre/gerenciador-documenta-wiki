@@ -230,6 +230,19 @@ NOVIDADES (relatório de indicadores e visual .html)
     campo genuinamente não se aplica ao programa/indicador) apareciam como
     não preenchidos. Agora "não se aplica" conta como resposta válida em
     qualquer campo, em qualquer ficha.
+  - Corrigido (SUAS e SISAN, confirmado com markdown bruto real): essas duas
+    páginas são curadas junto com Programas (home/DS), mas seguem um modelo
+    de conteúdo diferente — "Ficha de Sistema" (Conceitos e Definições,
+    Objetivos/Princípios/Diretrizes da Política, Organização da Política,
+    Objetivos do Sistema, Instâncias Deliberativas, Formas de Financiamento,
+    Normativos do Sistema), sem Público-alvo, Legislação, Forma de
+    implementação, Resultados esperados, Marcos relevantes nem Outras
+    informações no formato de Programa. Por isso 10 dos 15 campos da ficha de
+    Programa apareciam sempre vazios, mesmo com a página inteiramente
+    preenchida no seu próprio padrão. O relatório agora detecta esse modelo
+    (3 ou mais cabeçalhos exclusivos de Ficha de Sistema) e avalia a
+    completude pelos campos que de fato existem nele. Se aparecer outra
+    página com esse mesmo problema, mande o markdown bruto para eu conferir.
 
 O QUE É
 -------

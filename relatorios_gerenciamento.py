@@ -94,6 +94,49 @@ ROTULOS_PROGRAMA = [
     ("ppa", r"plano plurianual"),
 ]
 
+# rótulos (cabeçalhos) da ficha de SISTEMA (ex.: SUAS, SISAN) — páginas curadas
+# junto com Programas (home/DS), mas que na wiki seguem um padrão de conteúdo
+# diferente: Conceitos e Definições, Objetivos/Princípios/Diretrizes da Política,
+# Organização da Política, Objetivos do Sistema, Instâncias Deliberativas, Formas
+# de Financiamento e Normativos do Sistema — não têm Público-alvo, Legislação
+# (no formato de Programa), Forma de implementação, Resultados esperados, Marcos
+# relevantes nem Outras informações. Confirmado com o markdown real de SUAS e SISAN.
+ROTULOS_SISTEMA = [
+    ("descricao", r"conceitos e defini[cç][oõ]es"),
+    ("orgao_superior", r"[oó]rg[aã]o superior"),
+    ("orgao_gestor", r"[oó]rg[aã]o gestor"),
+    ("atores", r"atores envolvidos na implementa[cç][aã]o"),
+    ("outros_atores", r"outros\s*(?:[oó]rg[aã]os\s*/?\s*)?atores envolvidos"),
+    ("data_inicio", r"data de in[ií]cio\s*/?\s*cria[cç][aã]o"),
+    ("objetivos_politica", r"objetivos da pol[ií]tica"),
+    ("principios", r"princ[ií]pios da pol[ií]tica"),
+    ("diretrizes", r"diretrizes da pol[ií]tica"),
+    ("organizacao", r"organiza[cç][aã]o da pol[ií]tica"),
+    ("objetivos_sistema", r"objetivos do sistema"),
+    ("instancias", r"inst[aâ]ncias deliberativas do sistema"),
+    ("financiamento", r"formas de financiamento do sistema"),
+    ("normativos", r"normativos do sistema"),
+]
+
+# campos avaliados na conta de "documentada" de uma ficha de Sistema (orgao_superior
+# fica fora — é fixo/repetido, como no Programa; "normativos" também fica fora —
+# é só um título de seção-mãe, o conteúdo real está nos subtítulos dela (## Leis,
+# ## Decretos...) e por isso nunca teria texto próprio para avaliar. Sem
+# texto-padrão de referência aqui, então campo_preenchido() considera preenchido
+# qualquer conteúdo real — mesma lógica já usada na ficha de variável)
+CAMPOS_SISTEMA_AVALIAR = [
+    "descricao", "orgao_gestor", "atores", "outros_atores", "data_inicio",
+    "objetivos_politica", "principios", "diretrizes", "organizacao",
+    "objetivos_sistema", "instancias", "financiamento",
+]
+
+# 3+ destes cabeçalhos presentes = a página segue o padrão de Sistema, não de
+# Programa (cabeçalhos exclusivos do padrão de Sistema, não existem em Programa)
+_SISTEMA_CAMPOS_SINAL = {
+    "objetivos_politica", "principios", "diretrizes", "organizacao",
+    "objetivos_sistema", "instancias", "financiamento",
+}
+
 # rótulos da ficha de BASE DE DADOS
 ROTULOS_BD = [
     ("nome", r"^nome$"),
@@ -491,12 +534,25 @@ def gravar_indicadores(linhas, base="relatorio_indicadores"):
 def extrair_campos_programa(markdown):
     texto = gm._RX_INFOBOX.sub("", gm._RX_COMENTARIO.sub("", markdown or ""))
     heads = list(gm._RX_HEADER_MD.finditer(texto))
+    nome_popular = gm.texto_visivel(texto[:heads[0].start()] if heads else texto)
+
+    campos_sistema = gm.extrair_por_cabecalho(markdown, ROTULOS_SISTEMA)
+    sinais = sum(1 for k in _SISTEMA_CAMPOS_SINAL if gm.texto_visivel(campos_sistema.get(k, "")))
+    if sinais >= 3:
+        campos_sistema["nome_popular"] = nome_popular
+        return "sistema", campos_sistema
+
     campos = gm.extrair_por_cabecalho(markdown, ROTULOS_PROGRAMA)
-    campos["nome_popular"] = gm.texto_visivel(texto[:heads[0].start()] if heads else texto)
-    return campos
+    campos["nome_popular"] = nome_popular
+    return "programa", campos
 
 
-def classificar_situacao_programa(campos, vigente):
+def classificar_situacao_programa(campos, vigente, modelo="programa"):
+    if modelo == "sistema":
+        # sem texto-padrão de referência para este template (ainda não
+        # catalogado em padroes_fichas.json) -> qualquer conteúdo real conta
+        # como preenchido (mesma lógica usada na ficha de variável)
+        return gm.classificar_ficha(campos, {}, CAMPOS_SISTEMA_AVALIAR, CFG)
     excluidos = set(CFG.get("programa_campos_excluidos", []))
     campos_avaliar = [k for k in CFG["programa"] if k not in excluidos]
     return gm.classificar_ficha(
@@ -529,9 +585,9 @@ def coletar_programas_da_api():
                            "data_atualizacao": "", "url": ""})
             continue
         conteudo = pagina_completa(pg["id"])
-        campos = extrair_campos_programa(conteudo["content"])
+        modelo, campos = extrair_campos_programa(conteudo["content"])
         vigente = r["status"] == "vigente"
-        situacao, _ = classificar_situacao_programa(campos, vigente)
+        situacao, _ = classificar_situacao_programa(campos, vigente, modelo)
         publicada = gm.esta_publicada(conteudo, conteudo["content"])
         linhas.append({
             "codigo": r["codigo"], "programa": campos.get("nome_popular") or r["programa"],
@@ -553,9 +609,9 @@ def coletar_programas_de_amostra(arquivo):
     linhas = []
     for x in dados:
         x["content"] = gm.normalizar_conteudo_pagina(x.get("content", ""))
-        campos = extrair_campos_programa(x.get("content", ""))
+        modelo, campos = extrair_campos_programa(x.get("content", ""))
         vigente = gm.normalizar(x.get("status", "vigente")) != "descontinuado"
-        situacao, _ = classificar_situacao_programa(campos, vigente)
+        situacao, _ = classificar_situacao_programa(campos, vigente, modelo)
         publicada = gm.esta_publicada(x, x.get("content", ""))
         linhas.append({
             "codigo": x.get("codigo", ""), "programa": campos.get("nome_popular") or x.get("programa", ""),
