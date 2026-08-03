@@ -47,6 +47,13 @@ import gerenciamento as gm
 CFG = gm.carregar_padroes()
 BASE = cw.BASE
 
+# vocabulário fixo dos filtros de situação — garante que TODAS as opções
+# apareçam na lista do filtro, mesmo que, num dado momento, nenhuma linha
+# tenha aquele valor (ex.: "não documentada" continuar listada mesmo quando
+# nenhuma ficha estiver 100% em branco).
+_OPCOES_SITUACAO = ["documentada", "iniciada", "não documentada"]
+_OPCOES_SINTAXE = ["documentada", "iniciada", "não documentada", "Sintaxe indisponível"]
+
 # ======================= códigos da ficha nova de indicador =======================
 CODIGOS_FICHA_NOVA = ["A1", "A2", "A3", "A4", "A5", "B6", "B7", "B8", "B9",
                       "C10", "C11", "C12", "C13", "C14", "D15", "D16", "D17", "D18",
@@ -476,6 +483,7 @@ def gravar_indicadores(linhas, base="relatorio_indicadores"):
         filtros=["status_programa", "programa", "modelo_ficha", "situacao_ficha",
                  "publicada", "situacao_sintaxe"],
         filtro_dependencias={"programa": ["status_programa"]},
+        filtro_opcoes_fixas={"situacao_ficha": _OPCOES_SITUACAO, "situacao_sintaxe": _OPCOES_SINTAXE},
     )
 
 
@@ -589,6 +597,7 @@ def gravar_programas(linhas, base="relatorio_programas"):
         ],
         linhas=[{**r, "_link": [("abrir", r["url"])] if r["url"] else []} for r in linhas],
         filtros=["status", "situacao_ficha", "publicada"],
+        filtro_opcoes_fixas={"situacao_ficha": _OPCOES_SITUACAO},
     )
 
 
@@ -681,6 +690,7 @@ def gravar_bd(linhas, base="relatorio_base_dados"):
         ],
         linhas=[{**r, "_link": [("abrir", r["url"])] if r["url"] else []} for r in linhas],
         filtros=["status_programa", "situacao_ficha", "publicada"],
+        filtro_opcoes_fixas={"situacao_ficha": _OPCOES_SITUACAO},
     )
 
 
@@ -740,6 +750,7 @@ def gravar_ferramentas(linhas, base="relatorio_ferramentas"):
         ],
         linhas=[{**r, "_link": [("abrir", r["url"])] if r["url"] else []} for r in linhas],
         filtros=["situacao_ficha", "publicada"],
+        filtro_opcoes_fixas={"situacao_ficha": _OPCOES_SITUACAO},
     )
 
 

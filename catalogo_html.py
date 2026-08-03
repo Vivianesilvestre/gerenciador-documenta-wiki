@@ -252,7 +252,7 @@ def render_painel(path, relatorios, *, titulo="Documenta Wiki (MDS) · Painel de
 
 
 def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
-           filtros=None, filtro_labels=None, filtro_dependencias=None):
+           filtros=None, filtro_labels=None, filtro_dependencias=None, filtro_opcoes_fixas=None):
     """
     colunas: lista de {"key","label","tipo"}  tipo in {text,link,tags,long}
     linhas:  lista de dicts com os valores por key
@@ -267,10 +267,17 @@ def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
              com a seleção do(s) pai(s) (e opções que deixam de valer são
              desmarcadas automaticamente). Ex.: {"programa": ["status_programa"]}
              faz a lista de programas depender do status selecionado.
+    filtro_opcoes_fixas: {key: [valor, ...]} — para filtros de vocabulário
+             fechado (ex.: situação da ficha), garante que TODAS as opções
+             sempre apareçam na lista, mesmo que nenhuma linha atual tenha
+             aquele valor (ex.: "não documentada" continuar na lista mesmo
+             quando, num dado momento, nenhuma ficha estiver 100% em branco).
+             Sem isso, o filtro só lista os valores que ocorrem nos dados.
     """
     filtros = filtros or []
     filtro_labels = filtro_labels or {}
     filtro_dependencias = filtro_dependencias or {}
+    filtro_opcoes_fixas = filtro_opcoes_fixas or {}
     gerado = datetime.now().strftime("%d/%m/%Y %H:%M")
     mostrados = len(linhas)
     cobertura = ""
@@ -284,7 +291,7 @@ def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
     # opções de cada filtro (multi-seleção)
     opcoes = {}
     for fk in filtros:
-        vals = set()
+        vals = set(filtro_opcoes_fixas.get(fk, []))
         for ln in linhas:
             v = ln.get(fk)
             if isinstance(v, list):
