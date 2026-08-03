@@ -181,6 +181,17 @@ NOVIDADES (relatório de indicadores e visual .html)
     ainda não tem campo de sintaxe/ferramenta SAGICAD no template, então
     essas duas colunas aparecem como "não documentada"/vazias para ela —
     isso é esperado, não é erro.
+  - Corrigido (Programas — maioria travada em "iniciada"): os campos
+    "Programa Prioritário" e "Plano Plurianual" têm, no próprio texto-padrão,
+    o aviso de que a informação de referência (Planejamento Estratégico
+    2023/2026 e PPA 2024/2027) "ainda não está consolidada" e "deverá ser
+    preenchida posteriormente" — ou seja, é uma pendência institucional de
+    toda a wiki, que nenhuma ficha pode resolver por conta própria, não uma
+    pendência de preenchimento de cada programa. Por isso esses dois campos
+    foram excluídos da conta de "documentada" (mesma lógica já usada para
+    excluir "nome_popular"). Se esses planejamentos já tiverem sido
+    consolidados, remova os dois de "programa_campos_excluidos" em
+    padroes_fichas.json.
 
 O QUE É
 -------

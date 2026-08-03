@@ -71,7 +71,8 @@
     "orgao_superior": "Ministério do Desenvolvimento e Assistência Social, Família e Combate à Fome (MDS)"
   },
   "programa_campos_condicionais_vigente": ["data_encerramento"],
-  "programa_campos_excluidos": ["nome_popular"],
+  "_leia_me_programa_campos_excluidos": "prioritario e ppa foram excluídos da conta de 'documentada' porque o próprio texto-padrão desses dois campos diz que a informação institucional de referência (Planejamento Estratégico 2023/2026 e PPA 2024/2027) 'ainda não está consolidada' e 'deverá ser preenchida posteriormente' — ou seja, é uma pendência de toda a wiki (não pode ser preenchida ainda por ninguém), não uma pendência de cada ficha de programa. Se isso já tiver sido resolvido/consolidado, remova os dois daqui.",
+  "programa_campos_excluidos": ["nome_popular", "prioritario", "ppa"],
 
   "base_dados": {
     "nome": "O nome do arquivo da Base de Dados.",
