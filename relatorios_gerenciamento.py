@@ -698,7 +698,9 @@ def coletar_ferramentas_da_api():
         try:
             conteudo = pagina_completa(p["id"])
             campos = extrair_campos_ferramenta(conteudo["content"])
-            situacao, _ = gm.classificar_ficha(campos, CFG["ferramenta"], list(CFG["ferramenta"]), CFG)
+            excluidos = set(CFG.get("ferramenta_campos_excluidos", []))
+            campos_avaliar = [k for k in CFG["ferramenta"] if k not in excluidos]
+            situacao, _ = gm.classificar_ficha(campos, CFG["ferramenta"], campos_avaliar, CFG)
             publicada = gm.esta_publicada(conteudo, conteudo["content"])
             nome = gm.texto_visivel(campos.get("nome")) or conteudo.get("title") or p["path"].split("/")[-1]
             nome = nome.strip()

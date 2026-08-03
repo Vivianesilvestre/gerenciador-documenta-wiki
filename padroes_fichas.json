@@ -74,6 +74,9 @@
   "_leia_me_programa_campos_excluidos": "prioritario e ppa foram excluídos da conta de 'documentada' porque o próprio texto-padrão desses dois campos diz que a informação institucional de referência (Planejamento Estratégico 2023/2026 e PPA 2024/2027) 'ainda não está consolidada' e 'deverá ser preenchida posteriormente' — ou seja, é uma pendência de toda a wiki (não pode ser preenchida ainda por ninguém), não uma pendência de cada ficha de programa. Se isso já tiver sido resolvido/consolidado, remova os dois daqui.",
   "programa_campos_excluidos": ["nome_popular", "prioritario", "ppa"],
 
+  "_leia_me_ferramenta_campos_excluidos": "info_adicional (Observações complementares) foi excluído da conta de 'documentada' porque, diferente de Programas/Indicadores, o template de Ferramentas não tem uma convenção de 'se não houver, escreva Não há informações complementares' — então esse campo fica genuinamente em branco (sem nenhum texto, nem placeholder) em fichas que já estão completas, e não deveria travar a ficha em 'iniciada'. Confirmado pelo exemplo real do Mapa Social MDS.",
+  "ferramenta_campos_excluidos": ["info_adicional"],
+
   "base_dados": {
     "nome": "O nome do arquivo da Base de Dados.",
     "responsavel_dados": "Entidades responsáveis pela Base de Dados. Ex: IBGE, CAIXA, DATAPREV, MDS.",
