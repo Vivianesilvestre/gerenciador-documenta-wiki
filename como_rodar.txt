@@ -144,6 +144,26 @@ NOVIDADES (relatório de indicadores e visual .html)
     como "não documentada" mesmo estando completamente preenchida (caso
     relatado: IN213). Agora o reconhecimento do item aceita hífen, travessão
     (– ou —) ou dois-pontos como separador, e aceita o rótulo em negrito.
+  - Corrigido (impacto grande — Programas, Ferramentas e Indicadores): a
+    maioria das fichas de Programas e Ferramentas aparecia como "iniciada"
+    mesmo estando completamente preenchida, porque a resposta real costuma
+    ser digitada ABAIXO da caixinha de orientação de cada campo (a citação
+    "> texto de instrução..." que a wiki estiliza com o marcador
+    "{.is-info}"), sem apagar a caixinha. Quando a resposta é bem mais curta
+    que a instrução, a comparação por similaridade "diluía" errado e
+    classificava como não preenchido. Agora o sistema reconhece essa
+    caixinha como uma marcação estrutural: se sobrar qualquer texto de
+    resposta FORA dela, o campo conta como preenchido, não importa o que
+    ainda esteja dentro da caixinha nem o tamanho da resposta. Isso também
+    corrigiu indicadores como o IN212 e o IN213 do Cadastro Único.
+  - Retirado o filtro "Selo" do relatório de Programas.
+  - Corrigido: no gráfico do Dashboard "Indicadores vinculados a ferramentas
+    da SAGICAD", grafias diferentes do mesmo nome (ex.: "Vis Data", "Visdata",
+    "VISDATA") apareciam como barras separadas em vez de somarem numa só. Se
+    aparecer uma ferramenta nova com grafia diferente que não devesse ser
+    somada a nenhuma das já cadastradas em "ferramentas_dominios" (em
+    padroes_fichas.json), cadastre o alias em "ferramentas_nomes_alias" no
+    mesmo arquivo.
 
 O QUE É
 -------

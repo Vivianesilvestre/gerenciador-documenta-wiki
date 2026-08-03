@@ -85,6 +85,47 @@ def normalizar(texto):
     return t
 
 
+# ======================= caixinha de orientação (> texto {.is-info}) =======================
+# A wiki estiliza a instrução/placeholder de cada campo como uma citação
+# markdown ("> texto...") seguida do marcador de atributo "{.is-info}" (ou
+# similar), que faz o Wiki.js renderizar aquilo como uma "caixinha" de aviso.
+# Isso é um padrão ESTRUTURAL, não um texto a ser comparado por similaridade:
+# se sobrar QUALQUER texto de resposta FORA dessa caixinha, o campo foi
+# preenchido — mesmo que a caixinha em si ainda contenha a instrução original
+# e mesmo que a resposta seja bem mais curta que a instrução (isso é comum:
+# muita gente digita a resposta abaixo da caixinha, sem apagá-la). Antes desta
+# marcação, a comparação por similaridade tratava caixinha+resposta como um
+# blob só, e uma resposta curta "diluída" numa instrução longa batia como
+# "cobertura alta" e era classificada (errado) como não preenchida.
+_RX_CAIXA_BRUTA = re.compile(
+    r"(?m)^((?:[ \t]*>[^\n]*\n?)+)[ \t]*\n?[ \t]*\{\.is-[a-z]+\}[ \t]*\n?")
+_RX_CAIXA_SENTINELA = re.compile(r"\x02(.*?)\x03", re.S)
+
+
+def _marcar_caixas_orientacao(texto):
+    """Troca cada bloco '> ...\\n{.is-info}' por um trecho delimitado por
+    sentinelas (\\x02...\\x03), preservando o texto da caixinha (sem o '>')
+    para ser recuperado depois, campo a campo, por _separar_caixa_orientacao."""
+    def _sub(m):
+        linhas = [re.sub(r"^[ \t]*>[ \t]?", "", l) for l in m.group(1).splitlines()]
+        return "\x02" + "\n".join(linhas).strip() + "\x03\n"
+    return _RX_CAIXA_BRUTA.sub(_sub, texto or "")
+
+
+def _separar_caixa_orientacao(conteudo):
+    """(texto_fora_da_caixinha, texto_dentro_da(s)_caixinha(s)) a partir do
+    conteúdo de um campo já marcado por _marcar_caixas_orientacao."""
+    fora = _RX_CAIXA_SENTINELA.sub("", conteudo or "")
+    dentro = "\n".join(_RX_CAIXA_SENTINELA.findall(conteudo or ""))
+    return fora, dentro
+
+
+def texto_visivel(conteudo):
+    """Remove marcadores internos de caixinha de orientação de um valor de
+    campo, para exibição (não usar para classificação)."""
+    return _RX_CAIXA_SENTINELA.sub("", conteudo or "").strip()
+
+
 # ======================= campo preenchido? =======================
 def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
     """
@@ -92,6 +133,8 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
     texto-padrão/vazio (False).
 
     Regras, em ordem:
+      0. Se há texto fora da caixinha de orientação (ver acima), preenchido —
+         não importa o que sobrou dentro da caixinha.
       1. Vazio (ou só o marcador "Em construção") -> não preenchido.
       2. Contém uma das frases-padrão de resposta curta válida (ex.: "Indicador
          público.", "Não há informações relevantes adicionais.") -> preenchido
@@ -104,6 +147,17 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
          acrescentado conteúdo real substancial, é considerado não preenchido.
          Caso contrário, preenchido.
     """
+    fora, dentro = _separar_caixa_orientacao(conteudo)
+    if dentro:
+        # havia caixinha(s) de orientação neste campo: texto fora dela já
+        # conta como resposta real, não importa o que sobrou dentro.
+        if normalizar(fora):
+            return True
+        conteudo = dentro
+    # sem caixinha nenhuma (campo sem essa marcação, ex.: ficha antiga) ->
+    # segue o comportamento de sempre, comparando o campo inteiro com o
+    # texto-padrão.
+
     c = normalizar(conteudo)
     if not c:
         return False
@@ -197,7 +251,11 @@ def extrair_por_cabecalho(markdown, rotulos):
     até o início do próximo. `rotulos` é uma lista [(chave, regex_do_rotulo), ...],
     testada como prefixo do texto do cabeçalho (case-insensitive).
     """
-    texto = _RX_INFOBOX.sub("", _RX_COMENTARIO.sub("", markdown or ""))
+    # a marcação da caixinha (que consome o "{.is-...}") precisa vir ANTES de
+    # qualquer remoção desse marcador, senão perdemos o sinal de onde a
+    # caixinha termina; o que sobrar de "{.is-...}" sem bloco de citação na
+    # frente (caso raro) é limpo depois.
+    texto = _RX_INFOBOX.sub("", _marcar_caixas_orientacao(_RX_COMENTARIO.sub("", markdown or "")))
     heads = list(_RX_HEADER_MD.finditer(texto))
     campos = {}
     for i, m in enumerate(heads):
@@ -222,7 +280,7 @@ def extrair_por_item_numerado(markdown, codigos):
     próximo item numerado ou o próximo cabeçalho de Bloco.
     `codigos` é a lista de prefixos esperados, ex.: ["A1","A2",...,"F23"].
     """
-    texto = _RX_INFOBOX.sub("", _RX_COMENTARIO.sub("", markdown or ""))
+    texto = _RX_INFOBOX.sub("", _marcar_caixas_orientacao(_RX_COMENTARIO.sub("", markdown or "")))
     # separador aceita hífen, en-dash, em-dash ou dois-pontos (autocorreção do
     # Word/editor às vezes troca "-" por "–"/"—"); marcador antes do código
     # aceita vários símbolos de lista OU negrito (ex.: "**A1 – Código...**").

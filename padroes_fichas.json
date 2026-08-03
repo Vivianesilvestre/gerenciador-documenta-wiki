@@ -148,5 +148,8 @@
     "monitora.mds": "Monitora MDS",
     "observatoriocadunico": "Observatório do Cadastro Único",
     "observatorio-cadunico": "Observatório do Cadastro Único"
-  }
+  },
+
+  "_leia_me_ferramentas_nomes_alias": "Aliases extras de NOME (não de domínio) para quando o texto do link não bate com nenhum trecho de URL cadastrado acima, mas ainda é uma grafia/abreviação diferente de uma ferramenta já conhecida (ex.: uma sigla). Não é necessário cadastrar aqui variações só de maiúscula/espaço (ex. 'Vis Data' vs 'VisData') — isso já é tratado automaticamente a partir dos nomes oficiais de 'ferramentas_dominios'.",
+  "ferramentas_nomes_alias": {}
 }

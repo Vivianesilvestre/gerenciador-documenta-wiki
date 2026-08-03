@@ -183,8 +183,20 @@ def nome_ferramenta_sagicad(nome, url):
         if pedaco.lower() in u:
             return canonico
     nome = (nome or "").strip()
-    if nome and len(nome) <= 30:
-        return nome
+    if nome:
+        # variações de grafia/espaçamento/maiúsculas do MESMO nome já
+        # conhecido (ex.: "Vis Data", "Visdata", "VISDATA") caem todas no
+        # mesmo nome oficial, em vez de virarem barras separadas no gráfico
+        # — cobre tanto os nomes já cadastrados em "ferramentas_dominios"
+        # quanto aliases extras em "ferramentas_nomes_alias".
+        chave = gm.normalizar(nome).replace(" ", "")
+        aliases = {gm.normalizar(v).replace(" ", ""): v for v in CFG.get("ferramentas_dominios", {}).values()}
+        aliases.update({gm.normalizar(k).replace(" ", ""): v
+                        for k, v in CFG.get("ferramentas_nomes_alias", {}).items()})
+        if chave in aliases:
+            return aliases[chave]
+        if len(nome) <= 30:
+            return nome
     # nome ausente ou longo demais para ser o nome de uma ferramenta (é
     # provavelmente uma descrição do indicador) e a URL não bateu com
     # nenhum padrão conhecido -> identifica ao menos pelo domínio da URL.
@@ -430,7 +442,7 @@ def extrair_campos_programa(markdown):
     texto = gm._RX_INFOBOX.sub("", gm._RX_COMENTARIO.sub("", markdown or ""))
     heads = list(gm._RX_HEADER_MD.finditer(texto))
     campos = gm.extrair_por_cabecalho(markdown, ROTULOS_PROGRAMA)
-    campos["nome_popular"] = (texto[:heads[0].start()] if heads else texto).strip()
+    campos["nome_popular"] = gm.texto_visivel(texto[:heads[0].start()] if heads else texto)
     return campos
 
 
@@ -507,7 +519,7 @@ def coletar_programas_de_amostra(arquivo):
 
 
 def gravar_programas(linhas, base="relatorio_programas"):
-    cols = ["codigo", "programa", "tipo", "status", "selo", "n_indicadores", "situacao_ficha",
+    cols = ["codigo", "programa", "tipo", "status", "n_indicadores", "situacao_ficha",
             "publicada", "responsavel_atualizacao", "data_atualizacao", "url"]
     with open(f"{base}.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
@@ -534,7 +546,7 @@ def gravar_programas(linhas, base="relatorio_programas"):
             {"key": "_link", "label": "Ficha", "tipo": "link"},
         ],
         linhas=[{**r, "_link": [("abrir", r["url"])] if r["url"] else []} for r in linhas],
-        filtros=["status", "situacao_ficha", "publicada", "selo"],
+        filtros=["status", "situacao_ficha", "publicada"],
     )
 
 
@@ -646,7 +658,8 @@ def coletar_ferramentas_da_api():
             campos = extrair_campos_ferramenta(conteudo["content"])
             situacao, _ = gm.classificar_ficha(campos, CFG["ferramenta"], list(CFG["ferramenta"]), CFG)
             publicada = gm.esta_publicada(conteudo, conteudo["content"])
-            nome = (campos.get("nome") or conteudo.get("title") or p["path"].split("/")[-1]).strip()
+            nome = gm.texto_visivel(campos.get("nome")) or conteudo.get("title") or p["path"].split("/")[-1]
+            nome = nome.strip()
             linhas.append({
                 "nome": nome, "situacao_ficha": situacao, "publicada": "sim" if publicada else "não",
                 "responsavel_atualizacao": conteudo.get("authorName", ""),
