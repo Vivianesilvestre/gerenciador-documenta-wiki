@@ -290,9 +290,13 @@ def extrair_por_item_numerado(markdown, codigos):
     texto = _RX_INFOBOX.sub("", _marcar_caixas_orientacao(_RX_COMENTARIO.sub("", markdown or "")))
     # separador aceita hífen, en-dash, em-dash ou dois-pontos (autocorreção do
     # Word/editor às vezes troca "-" por "–"/"—"); marcador antes do código
-    # aceita vários símbolos de lista OU negrito (ex.: "**A1 – Código...**").
+    # aceita vários símbolos de lista OU negrito (ex.: "**A1 – Código...**")
+    # e também um item de lista que embute um cabeçalho markdown (ex.:
+    # "- ### A1 - Código único da variável", formato real visto na ficha de
+    # variável — o "-" é o marcador de lista e "###" vira negrito/destaque
+    # visual no navegador, mas no markdown bruto os dois aparecem juntos).
     rx_item = re.compile(
-        r"(?m)^[ \t]*[▸‣►\-*•]{0,3}[ \t]*(" + "|".join(re.escape(c) for c in codigos)
+        r"(?m)^[ \t]*[▸‣►\-*•]{0,3}[ \t]*#{0,6}[ \t]*(" + "|".join(re.escape(c) for c in codigos)
         + r")\b[ \t]*[-–—:][ \t]*[^\n]*$",
         re.IGNORECASE)
     marcas = list(rx_item.finditer(texto))
@@ -301,7 +305,7 @@ def extrair_por_item_numerado(markdown, codigos):
         codigo = m.group(1).lower()
         fim = marcas[i + 1].start() if i + 1 < len(marcas) else len(texto)
         corpo = texto[m.end():fim]
-        corpo = re.sub(r"(?m)^[ \t]*#{1,6}[ \t]*bloco\s+[a-f]\b.*$", "", corpo, flags=re.IGNORECASE)
+        corpo = re.sub(r"(?m)^[ \t]*#{1,6}[ \t]*bloco\s+[a-z]\b.*$", "", corpo, flags=re.IGNORECASE)
         corpo = re.sub(r"[*`>]", "", corpo).strip()
         campos[codigo] = corpo
     return campos
@@ -309,7 +313,7 @@ def extrair_por_item_numerado(markdown, codigos):
 
 # ======================= detecção do modelo da ficha (antigo x novo) =======================
 _RX_MODELO_NOVO = re.compile(
-    r"bloco\s+[a-f]\s*[:\-–—]|(?:^|\n)\s*[▸‣►\-*•]{0,3}\s*[a-f]\d{1,2}\s*[-–—:]", re.IGNORECASE)
+    r"bloco\s+[a-f]\s*[:\-–—]|(?:^|\n)\s*[▸‣►\-*•]{0,3}\s*#{0,6}\s*[a-f]\d{1,2}\s*[-–—:]", re.IGNORECASE)
 
 
 def detectar_modelo(markdown):

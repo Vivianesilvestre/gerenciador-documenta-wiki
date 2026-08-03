@@ -200,6 +200,20 @@ NOVIDADES (relatório de indicadores e visual .html)
     informações complementares" quando não houver nada a acrescentar). Esse
     campo foi excluído da conta de "documentada" (ver
     "ferramenta_campos_excluidos" em padroes_fichas.json).
+  - Corrigido (causa real de quase todos os Programas travados em "iniciada",
+    confirmada com o markdown bruto real do Cadastro Único): o cabeçalho do
+    campo "Outros Atores Envolvidos" na wiki real não tem a palavra "Órgãos"
+    (é só "Outros Atores Envolvidos"), mas o sistema só reconhecia o
+    cabeçalho "Outros Órgãos/Atores Envolvidos" — então esse campo nunca era
+    encontrado e a ficha nunca passava de "iniciada", mesmo 100% preenchida.
+    Agora o reconhecimento aceita os dois formatos (com ou sem "Órgãos").
+  - Corrigido (IN212/IN213 e outras fichas de variável, confirmado com o
+    markdown bruto real): o item de cada campo aparece como "- ### A1 -
+    Código..." (um item de lista de markdown que embute um cabeçalho ###),
+    não como "‣ A1 - Código..." (formato assumido antes) — por isso a ficha
+    de variável não era reconhecida e todos os campos ficavam vazios. Agora
+    o reconhecimento aceita cabeçalho markdown (#, ##, ### etc.) entre o
+    marcador de lista e o código do campo.
 
 O QUE É
 -------

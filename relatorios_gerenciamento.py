@@ -75,7 +75,7 @@ ROTULOS_PROGRAMA = [
     ("orgao_superior", r"[oó]rg[aã]o superior"),
     ("orgao_gestor", r"[oó]rg[aã]o gestor"),
     ("atores", r"atores envolvidos na implementa[cç][aã]o"),
-    ("outros_atores", r"outros [oó]rg[aã]os\s*/?\s*atores envolvidos"),
+    ("outros_atores", r"outros\s*(?:[oó]rg[aã]os\s*/?\s*)?atores envolvidos"),
     ("data_inicio", r"data de in[ií]cio\s*/?\s*cria[cç][aã]o"),
     ("legislacao", r"instrumentos legais relacionados"),
     ("data_encerramento", r"data de encerramento"),
