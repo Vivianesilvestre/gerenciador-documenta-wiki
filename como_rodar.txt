@@ -214,6 +214,16 @@ NOVIDADES (relatório de indicadores e visual .html)
     de variável não era reconhecida e todos os campos ficavam vazios. Agora
     o reconhecimento aceita cabeçalho markdown (#, ##, ### etc.) entre o
     marcador de lista e o código do campo.
+  - Corrigido (mais 2 cabeçalhos com grafia real diferente da esperada,
+    confirmados com markdown bruto de Bolsa Família e Observatório do Censo
+    SUAS): "Marcos Históricos Relevantes" (Programas — a palavra "Históricos"
+    não estava prevista) e "Público a quem se destina" (Ferramentas — uma
+    segunda forma de perguntar o público-alvo, além de "Qual o público-
+    alvo?"). Os dois agora são reconhecidos.
+  - Nota: o filtro "Situação da ficha" só lista as opções que realmente
+    aparecem nos dados atuais — se "não documentada" não aparecer mais no
+    filtro de Indicadores, é porque, com as correções acima, nenhum
+    indicador está mais 100% em branco (não é um bug do filtro).
 
 O QUE É
 -------
