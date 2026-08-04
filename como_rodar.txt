@@ -258,6 +258,14 @@ NOVIDADES (relatório de indicadores e visual .html)
     uma pendência de quem preenche a ficha. A1 agora fica fora da conta de
     "documentada" também na ficha de indicador padrão (novo), não só na de
     variável.
+  - Corrigido (IN018, Acredita no Primeiro Passo, e outras fichas do MODELO
+    NOVO): por instrução da usuária, o BLOCO A inteiro (A1-A5) saiu da conta
+    de "documentada" — esses campos são preenchidos pela equipe que CRIA a
+    ficha (etapa administrativa), não por quem documenta o indicador de fato.
+    Antes disso, uma ficha com só o Bloco A preenchido e os Blocos B a F
+    ainda no texto-padrão contava como "iniciada" (porque A2-A5 "preenchidos"
+    somavam pontos); devia contar como "não documentada". A regra de situação
+    da ficha (modelo novo) passa a valer só a partir do Bloco B.
 
 O QUE É
 -------
