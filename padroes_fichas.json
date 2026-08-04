@@ -44,8 +44,12 @@
   },
 
   "indicador_novo_campos_status": ["a1","a2","a3","a4","a5","c10","c11","c12","c13","c14","d15","d16","d17","d18","e19","e20","e21","e22","f23_documentos"],
-  "indicador_novo_campos_excluidos": ["b6","b7","b8","b9","f23_ferramentas_sagicad"],
+  "_leia_me_indicador_novo_campos_excluidos": "b6/b7/b8/b9/f23_ferramentas_sagicad nem entram em indicador_novo_campos_status (campos avaliados por outro motivo/já cobertos em outro lugar). a1 (Código único do indicador) foi acrescentado depois de conferir 2 fichas reais (GPTE do Bolsa Família, ligada ao IN203) já totalmente preenchidas em todos os outros campos, mas com A1 ainda em 'Em construção' — mesmo padrão institucional já identificado na ficha de variável (ver variavel_campos_excluidos): parece ser um código atribuído centralmente, não uma pendência de quem preenche a ficha.",
+  "indicador_novo_campos_excluidos": ["b6","b7","b8","b9","f23_ferramentas_sagicad","a1"],
   "indicador_novo_placeholder_vazio": ["em construção", "em construcao", "proposta em construcao"],
+
+  "_leia_me_indicador_antigo_campos_excluidos": "info_adicional foi excluído da conta de 'documentada' da ficha ANTIGA de indicador porque o próprio texto-padrão desse campo diz que, na ausência de informação relevante, 'este campo deve ficar vazio ou ser preenchido com Não há informações relevantes adicionais' — ou seja, vazio é uma opção válida (diferente do padrão de Programa, que exige escrever 'Não há...'). Confirmado com o exemplo real do IN001 (Acredita no Primeiro Passo), com todos os outros 11 campos preenchidos e só este vazio.",
+  "indicador_antigo_campos_excluidos": ["info_adicional"],
 
   "_leia_me_variavel_campos_excluidos": "Campo(s) da ficha de VARIÁVEL (ex.: GPTEs, faixas de renda 'categoria' — Blocos A-G, diferente da ficha padrão de indicador) que não entram na conta de 'documentada'. A1 (Código único da variável) foi excluído porque, no exemplo real conferido (IN212), a ficha já está com todo o conteúdo preenchido mas A1 ainda mostra 'Proposta em construção' — parece ser um código institucional ainda não atribuído em toda a série, não uma pendência de preenchimento do resto da ficha.",
   "variavel_campos_excluidos": ["a1"],

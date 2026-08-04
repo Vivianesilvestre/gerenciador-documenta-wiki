@@ -243,6 +243,21 @@ NOVIDADES (relatório de indicadores e visual .html)
     (3 ou mais cabeçalhos exclusivos de Ficha de Sistema) e avalia a
     completude pelos campos que de fato existem nele. Se aparecer outra
     página com esse mesmo problema, mande o markdown bruto para eu conferir.
+  - Corrigido (IN001 e outras fichas do MODELO ANTIGO, confirmado com markdown
+    bruto real): o campo "Informações Complementares" ficava vazio em fichas
+    já totalmente preenchidas — mas isso é permitido, o próprio texto-padrão
+    desse campo diz que ele "deve ficar vazio ou ser preenchido com Não há
+    informações relevantes adicionais" (diferente do padrão de Programa, que
+    exige escrever "Não há..."). Esse campo não entra mais na conta de
+    "documentada" da ficha antiga.
+  - Corrigido (GPTEs do Bolsa Família e outras fichas do MODELO NOVO,
+    confirmado com markdown bruto real): o campo A1 (Código único do
+    indicador) trava fichas totalmente preenchidas em "iniciada" quando ainda
+    mostra "Em construção" — mesmo padrão institucional já visto na ficha de
+    variável (IN212/213): parece ser um código atribuído centralmente, não
+    uma pendência de quem preenche a ficha. A1 agora fica fora da conta de
+    "documentada" também na ficha de indicador padrão (novo), não só na de
+    variável.
 
 O QUE É
 -------

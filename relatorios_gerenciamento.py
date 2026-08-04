@@ -246,10 +246,12 @@ def classificar_situacao_ficha_indicador(modelo, campos):
         campos_avaliar = [k for k in CAMPOS_FICHA_VARIAVEL if k not in excluidos]
         return gm.classificar_ficha(campos, {}, campos_avaliar, CFG)
     if modelo == "novo":
-        return gm.classificar_ficha(
-            campos, CFG["indicador_novo"], CFG["indicador_novo_campos_status"], CFG)
-    return gm.classificar_ficha(
-        campos, CFG["indicador_antigo"], list(CFG["indicador_antigo"]), CFG)
+        excluidos = set(CFG.get("indicador_novo_campos_excluidos", []))
+        campos_avaliar = [k for k in CFG["indicador_novo_campos_status"] if k not in excluidos]
+        return gm.classificar_ficha(campos, CFG["indicador_novo"], campos_avaliar, CFG)
+    excluidos = set(CFG.get("indicador_antigo_campos_excluidos", []))
+    campos_avaliar = [k for k in CFG["indicador_antigo"] if k not in excluidos]
+    return gm.classificar_ficha(campos, CFG["indicador_antigo"], campos_avaliar, CFG)
 
 
 def status_a5(campos_novo):
