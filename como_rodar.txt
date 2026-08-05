@@ -314,6 +314,12 @@ NOVIDADES (relatório de indicadores e visual .html)
     passar como preenchido. Atualizei TODOS os 11 textos-padrão da ficha
     antiga (não só esses dois) com a redação atual, extraída do markdown de
     IN037 — mesmo tratamento dado à ficha nova no item anterior.
+  - Corrigido (IN113, PAA, confirmado por instrução explícita da usuária): o
+    campo D18 (sintaxe) saiu da conta de "documentada" da ficha nova, igual
+    ao Bloco A — o link da ficha de sintaxe costuma ser preenchido antes ou
+    separado da documentação real do indicador, então uma ficha só com D18
+    preenchido e o resto (Blocos B, C, E, F) ainda no texto-padrão agora
+    conta como "não documentada", não "iniciada".
 
 O QUE É
 -------

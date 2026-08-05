@@ -61,7 +61,7 @@
     "e22",
     "f23_documentos"
   ],
-  "_leia_me_indicador_novo_campos_excluidos": "b6/b7/b8/b9/f23_ferramentas_sagicad nem entram em indicador_novo_campos_status (campos avaliados por outro motivo/já cobertos em outro lugar). Todo o BLOCO A (a1-a5) foi excluído por instrução explícita da usuária: esses campos são preenchidos pela equipe que CRIA a ficha (etapa administrativa/de cadastro), não por quem a documenta de fato — por isso uma ficha com só o Bloco A preenchido e os Blocos B-F ainda no texto-padrão (ex.: IN018, Acredita no Primeiro Passo) deve contar como 'não documentada', não 'iniciada'. A regra de situação da ficha (novo modelo) passa a valer só a partir do Bloco B.",
+  "_leia_me_indicador_novo_campos_excluidos": "b6/b7/b8/b9/f23_ferramentas_sagicad nem entram em indicador_novo_campos_status (campos avaliados por outro motivo/já cobertos em outro lugar). Todo o BLOCO A (a1-a5) foi excluído por instrução explícita da usuária: esses campos são preenchidos pela equipe que CRIA a ficha (etapa administrativa/de cadastro), não por quem a documenta de fato — por isso uma ficha com só o Bloco A preenchido e os Blocos B-F ainda no texto-padrão (ex.: IN018, Acredita no Primeiro Passo) deve contar como 'não documentada', não 'iniciada'. A regra de situação da ficha (novo modelo) passa a valer só a partir do Bloco B. D18 (sintaxe) também foi excluído por instrução explícita da usuária (confirmado com o exemplo real IN113, PAA): o link da ficha de sintaxe costuma ser preenchido antes/separado da documentação real do indicador, então uma ficha só com D18 preenchido e o resto (B a C, E, F) ainda no texto-padrão também deve contar como 'não documentada', não 'iniciada'.",
   "indicador_novo_campos_excluidos": [
     "b6",
     "b7",
@@ -72,7 +72,8 @@
     "a2",
     "a3",
     "a4",
-    "a5"
+    "a5",
+    "d18"
   ],
   "indicador_novo_placeholder_vazio": [
     "em construção",
