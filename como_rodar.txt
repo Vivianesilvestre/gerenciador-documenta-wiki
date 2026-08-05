@@ -287,6 +287,23 @@ NOVIDADES (relatório de indicadores e visual .html)
     o mesmo problema na coluna "Sintaxe" (classificar_sintaxe), que mostrava
     "Sintaxe indisponível" para campos D18 ainda intocados pelo mesmo motivo
     (a instrução-padrão lista essa frase como um dos 3 exemplos de resposta).
+  - Corrigido (segunda causa raiz do mesmo problema, achada testando o
+    markdown bruto EXATO de IN047 e IN128, ambas em branco): os TEXTOS-
+    PADRÃO da ficha nova (B6 a F23) cadastrados em padroes_fichas.json
+    estavam DESATUALIZADOS — mais curtos que a instrução real e atual da
+    wiki (a plataforma expandiu as instruções desde a última vez que
+    capturamos esses textos, por exemplo C10 ganhou um parágrafo extra de
+    "Orientações:"). Como a comparação de "ainda é a instrução" também
+    exige que o campo não seja muito MAIOR que o texto-padrão (para não
+    confundir instrução intacta com resposta real), campos como C10, C11,
+    C14, D15, E19, E20, E21 e E22 — todos ainda com a instrução completa e
+    atual, nunca preenchidos — ficavam maiores que o texto-padrão antigo o
+    suficiente para "passar" como resposta real. Atualizei os textos-padrão
+    de B6 a F23 em padroes_fichas.json com a redação atual (extraída do
+    markdown de IN047), o que resolve os dois indicadores testados. Se ainda
+    sobrar algum campo específico com esse problema (a plataforma pode ter
+    revisado outras instruções que não vimos), me manda o markdown bruto de
+    outro indicador em branco.
 
 O QUE É
 -------
