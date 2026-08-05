@@ -304,6 +304,16 @@ NOVIDADES (relatório de indicadores e visual .html)
     sobrar algum campo específico com esse problema (a plataforma pode ter
     revisado outras instruções que não vimos), me manda o markdown bruto de
     outro indicador em branco.
+  - Corrigido (mesma causa raiz, mas na FICHA ANTIGA, achada testando o
+    markdown bruto EXATO de IN037): os campos "Periodicidade de Atualização"
+    e "Informações sobre a sintaxe de cálculo do indicador" também tinham
+    texto-padrão desatualizado (a instrução real agora usa aspas em cada
+    opção — "DIÁRIO", "SEMANAL"... — e numeração 1)/2)/3) na de sintaxe, que
+    o texto-padrão antigo não tinha). Isso reduzia a "cobertura" da compa-
+    ração abaixo dos 80% exigidos, mesmo com o campo intocado, e fazia
+    passar como preenchido. Atualizei TODOS os 11 textos-padrão da ficha
+    antiga (não só esses dois) com a redação atual, extraída do markdown de
+    IN037 — mesmo tratamento dado à ficha nova no item anterior.
 
 O QUE É
 -------
