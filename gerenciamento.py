@@ -133,12 +133,14 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
     texto-padrão/vazio (False).
 
     Regras, em ordem:
-      0. Se há texto fora da caixinha de orientação (ver acima), preenchido —
-         não importa o que sobrou dentro da caixinha.
+      0. Se há texto fora da caixinha de orientação (ver acima) que NÃO seja,
+         ele mesmo, um pedaço da própria instrução, preenchido — não importa
+         o que sobrou dentro da caixinha.
       1. Vazio (ou só o marcador "Em construção") -> não preenchido.
       2. Contém uma das frases-padrão de resposta curta válida (ex.: "Indicador
          público.", "Não há informações relevantes adicionais.") -> preenchido
-         (é uma escolha deliberada, mesmo que o texto seja curto).
+         (é uma escolha deliberada, mesmo que o texto seja curto) — desde que
+         o campo não seja, no geral, ainda basicamente a instrução inteira.
       3. Sem texto-padrão de referência para comparar -> qualquer conteúdo conta
          como preenchido.
       4. Compara com o texto-padrão: se a maior parte da instrução ainda está
@@ -147,14 +149,32 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
          acrescentado conteúdo real substancial, é considerado não preenchido.
          Caso contrário, preenchido.
     """
+    ref_bruto = normalizar(texto_padrao)
     fora, dentro = _separar_caixa_orientacao(conteudo)
     tem_caixa = bool(dentro)
     if tem_caixa:
-        # havia caixinha(s) de orientação neste campo: texto fora dela já
-        # conta como resposta real, não importa o que sobrou dentro.
-        if normalizar(fora):
-            return True
-        conteudo = dentro
+        # havia caixinha(s) de orientação neste campo: texto fora dela normal-
+        # mente é resposta real. MAS a marcação da caixinha depende de linhas
+        # consecutivas começando com ">" — um comentário HTML (<!-- ... -->)
+        # no MEIO da instrução (visto no campo D18 em branco) quebra essa
+        # continuidade e faz sobrar, fora da caixinha, um pedaço da própria
+        # instrução ainda intacta (não uma resposta digitada por alguém). Por
+        # isso só confiamos no texto de fora se ele NÃO for, em boa parte, um
+        # trecho literal do texto-padrão — senão juntamos tudo (fora + dentro)
+        # e comparamos como um campo só, mais abaixo.
+        fora_n = normalizar(fora)
+        if fora_n:
+            eh_so_instrucao_vazada = False
+            if ref_bruto:
+                sm_fora = SequenceMatcher(None, ref_bruto, fora_n)
+                cobertura_fora = (sum(b.size for b in sm_fora.get_matching_blocks() if b.size >= 10)
+                                   / max(len(fora_n), 1))
+                eh_so_instrucao_vazada = cobertura_fora >= 0.6
+            if not eh_so_instrucao_vazada:
+                return True
+            conteudo = fora + "\n" + dentro
+        else:
+            conteudo = dentro
     # sem caixinha nenhuma (campo sem essa marcação, ex.: ficha antiga) ->
     # segue o comportamento de sempre, comparando o campo inteiro com o
     # texto-padrão.
@@ -166,11 +186,21 @@ def campo_preenchido(conteudo, texto_padrao, cfg, folga_tamanho=1.2):
         if placeholder in c and len(c) < len(placeholder) + 40:
             return False
 
+    ref = ref_bruto
+
+    # frases-padrão de resposta curta válida (ex.: "Indicador público.",
+    # "Sintaxe indisponível - memória de cálculo registrada..."): só contam
+    # como resposta se o campo NÃO for basicamente a instrução inteira ainda
+    # intacta. Isso importa porque várias instruções enumeram as próprias
+    # alternativas válidas como exemplo (ex.: a instrução do campo de sintaxe
+    # lista as 3 opções, incluindo o texto "sintaxe indisponível" dentro
+    # dela) — sem essa guarda, um campo 100% intocado "bate" com a frase só
+    # por ela aparecer no meio da instrução nunca apagada, e é contado (errado)
+    # como preenchido. Sem texto-padrão para comparar o tamanho, aceita direto.
     for frase in cfg.get("frases_fallback_preenchido", []):
-        if frase in c:
+        if frase in c and (not ref or len(c) <= len(ref) * 0.5):
             return True
 
-    ref = normalizar(texto_padrao)
     if not ref:
         # não temos o texto-padrão exato deste campo para comparar (ex.: um
         # tipo de ficha ainda não catalogado em padroes_fichas.json). Se havia

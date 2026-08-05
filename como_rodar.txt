@@ -266,6 +266,27 @@ NOVIDADES (relatório de indicadores e visual .html)
     ainda no texto-padrão contava como "iniciada" (porque A2-A5 "preenchidos"
     somavam pontos); devia contar como "não documentada". A regra de situação
     da ficha (modelo novo) passa a valer só a partir do Bloco B.
+  - Corrigido (causa raiz de "não documentada" nunca aparecer nas fichas do
+    MODELO NOVO, achada testando o markdown bruto EXATO do IN018 fornecido
+    pela usuária, com o comentário HTML real): o campo D18 (Implementação -
+    sintaxe/memória de cálculo), quando ainda intocado, tem um comentário
+    HTML (<!-- ... -->) no MEIO da caixinha de orientação, explicando como
+    nomear a ficha de sintaxe. Esse comentário quebra a sequência de linhas
+    "> " que a marcação da caixinha depende, fazendo sobrar, FORA da
+    caixinha, um pedaço da própria instrução ainda intacta (não uma resposta
+    real) — e a regra "texto fora da caixinha = preenchido" contava esse
+    pedaço vazado como resposta, prendendo toda ficha nova ainda em branco em
+    "iniciada" (nunca "não documentada"), já que D18 sozinho "valia" ponto.
+    Como esse comentário está no texto-padrão da PLATAFORMA (não é algo que
+    a usuária escreveu), isso acontecia em praticamente toda ficha nova ainda
+    não preenchida, explicando por que o filtro "não documentada" ficava
+    persistentemente vazio mesmo com dezenas de fichas realmente em branco.
+    Agora o texto de fora da caixinha só conta como resposta real se ele
+    também não for, em boa parte, um trecho literal do texto-padrão — senão
+    o campo inteiro (dentro + fora) é comparado como um só. Corrigido também
+    o mesmo problema na coluna "Sintaxe" (classificar_sintaxe), que mostrava
+    "Sintaxe indisponível" para campos D18 ainda intocados pelo mesmo motivo
+    (a instrução-padrão lista essa frase como um dos 3 exemplos de resposta).
 
 O QUE É
 -------

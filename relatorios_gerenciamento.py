@@ -337,14 +337,23 @@ def extrair_ferramentas_sagicad(modelo, campos, markdown):
 def classificar_sintaxe(campo_sintaxe_texto, link_sintaxe, texto_padrao_campo=""):
     """Retorna (situacao, pagina_sintaxe_url_usada)."""
     c = gm.normalizar(campo_sintaxe_texto or "")
+    # a própria instrução do campo (ainda intacta, ninguém preencheu) já
+    # enumera as 3 opções como exemplo — incluindo o texto "sintaxe
+    # indisponível" dentro dela. Sem essa guarda, um campo 100% em branco
+    # "bate" com a frase só por ela aparecer no meio da instrução nunca
+    # apagada, e é mostrado (errado) como "Sintaxe indisponível" em vez de
+    # "não documentada". Só aceita o casamento se o campo for bem mais curto
+    # que a instrução inteira (resposta curta reaproveitando a redação-padrão).
+    ref = gm.normalizar(texto_padrao_campo or "")
+    curto = (not ref) or len(c) <= len(ref) * 0.5
     for frase in CFG["frases_sintaxe_indisponivel"]:
-        if frase in c:
+        if frase in c and curto:
             return "Sintaxe indisponível", ""
     # a frase completa (com a explicação de onde a memória de cálculo está
     # registrada) pode variar um pouco na redação real da ficha; o núcleo
     # "sintaxe indisponível" já é suficientemente específico para não dar
     # falso positivo, então também aceitamos esse casamento mais solto.
-    if "sintaxe indisponivel" in c:
+    if "sintaxe indisponivel" in c and curto:
         return "Sintaxe indisponível", ""
     if link_sintaxe:
         try:
