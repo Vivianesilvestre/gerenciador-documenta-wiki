@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acompanhamento de Demandas · Documenta Wiki (MDS)</title>
+<style>
+  :root { --navy:#1F3864; --gold:#BF8F00; }
+  * { box-sizing:border-box; }
+  body { font-family:Arial,Helvetica,sans-serif; margin:0; color:#222; background:#f4f5f7; }
+  header { background:var(--navy); color:#fff; padding:20px 28px; }
+  header h1 { margin:0 0 4px; font-size:20px; }
+  header p { margin:0; font-size:13px; opacity:.9; }
+  .cards { display:flex; gap:16px; flex-wrap:wrap; padding:22px 28px 0; }
+  .card { background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.08);
+           padding:18px 26px; min-width:160px; flex:1; text-align:center; }
+  .card-valor { font-size:32px; font-weight:bold; color:var(--navy); line-height:1.1; }
+  .card-label { font-size:13px; color:#666; margin-top:4px; }
+  .card.card-atrasada .card-valor { color:#B03A2E; }
+  .card.card-em-dia .card-valor { color:#2E7D32; }
+  .barra { padding:16px 28px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .barra input[type=search] { flex:1; min-width:220px; padding:8px 12px; font-size:14px;
+            border:1px solid #c4c8ce; border-radius:6px; }
+  .barra select { padding:7px 10px; font-size:13px; border:1px solid #c4c8ce; border-radius:6px;
+            background:#fff; color:#333; }
+  #contador { font-size:13px; color:#666; margin-left:auto; white-space:nowrap; }
+  .wrap { padding:16px 28px 40px; }
+  table { width:100%; border-collapse:collapse; background:#fff; font-size:13px;
+           box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  th { background:#eef1f6; color:var(--navy); text-align:left; padding:10px 12px;
+        border-bottom:2px solid var(--navy); }
+  td { padding:9px 12px; border-bottom:1px solid #eceef1; vertical-align:top; }
+  tr:hover td { background:#fafbfd; }
+  .vazio { color:#bbb; }
+  .oculto { display:none; }
+  .sit { display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px;
+          font-weight:bold; color:#666; background:#eef1f6; }
+  .sit-em-dia { color:#2E7D32; background:#e6f4ea; }
+  .sit-atrasada { color:#B03A2E; background:#fbe9e7; }
+  .aviso { padding:24px 28px; color:#888; }
+</style></head>
+<body>
+<header>
+  <h1>Acompanhamento de Demandas · Documenta Wiki (MDS)</h1>
+  <p>Fichas atribuídas, prazos e observações registrados pela equipe · atualizado ao vivo</p>
+</header>
+<div class="cards" id="cards"></div>
+<div class="barra">
+  <input type="search" id="busca" placeholder="Buscar por código, indicador ou programa...">
+  <select id="filtroSituacao">
+    <option value="">Situação da demanda (todas)</option>
+    <option value="atribuida">Atribuída (com data de envio)</option>
+    <option value="nao-atribuida">Não atribuída</option>
+    <option value="em-dia">Em dia</option>
+    <option value="atrasada">Atrasada</option>
+  </select>
+  <span id="contador"></span>
+</div>
+<div class="wrap">
+  <p class="aviso oculto" id="aviso"></p>
+  <table id="tab">
+    <thead><tr>
+      <th>Código</th><th>Indicador</th><th>Programa</th>
+      <th>Data de envio</th><th>Prazo de resposta</th><th>Situação da demanda</th><th>Observações</th>
+    </tr></thead>
+    <tbody id="corpo"></tbody>
+  </table>
+</div>
+<script>
+  const INDICE_URL = "indicadores_indice.json";
+  const API_ACOMPANHAMENTO = "/api/acompanhamento";
+
+  const cardsEl = document.getElementById('cards');
+  const corpoEl = document.getElementById('corpo');
+  const contadorEl = document.getElementById('contador');
+  const buscaEl = document.getElementById('busca');
+  const filtroEl = document.getElementById('filtroSituacao');
+  const avisoEl = document.getElementById('aviso');
+
+  function situacaoDe(reg) {
+    if (!reg || !reg.prazo_resposta) return null;
+    const prazo = new Date(reg.prazo_resposta + 'T00:00:00');
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    return prazo >= hoje ? 'em-dia' : 'atrasada';
+  }
+
+  function situacaoHtml(sit) {
+    if (sit === 'em-dia') return '<span class="sit sit-em-dia">Em dia</span>';
+    if (sit === 'atrasada') return '<span class="sit sit-atrasada">Atrasada</span>';
+    return '<span class="vazio">—</span>';
+  }
+
+  let linhas = [];
+
+  function montarCards() {
+    const total = linhas.length;
+    const atribuidas = linhas.filter(l => l.reg && l.reg.data_envio).length;
+    const emDia = linhas.filter(l => l.sit === 'em-dia').length;
+    const atrasadas = linhas.filter(l => l.sit === 'atrasada').length;
+    const cards = [
+      { label: 'Indicadores', valor: total, cls: '' },
+      { label: 'Fichas atribuídas', valor: atribuidas, cls: '' },
+      { label: 'Em dia', valor: emDia, cls: 'card-em-dia' },
+      { label: 'Atrasadas', valor: atrasadas, cls: 'card-atrasada' },
+    ];
+    cardsEl.innerHTML = cards.map(c => `
+      <div class="card ${c.cls}">
+        <div class="card-valor">${c.valor.toLocaleString('pt-BR')}</div>
+        <div class="card-label">${c.label}</div>
+      </div>`).join('');
+  }
+
+  function montarLinhas() {
+    const termo = buscaEl.value.trim().toLowerCase();
+    const filtro = filtroEl.value;
+    let visiveis = 0;
+    corpoEl.innerHTML = linhas.filter(l => {
+      if (termo) {
+        const alvo = (l.codigo + ' ' + (l.nome || '') + ' ' + (l.programa || '')).toLowerCase();
+        if (!alvo.includes(termo)) return false;
+      }
+      if (filtro === 'atribuida' && !(l.reg && l.reg.data_envio)) return false;
+      if (filtro === 'nao-atribuida' && (l.reg && l.reg.data_envio)) return false;
+      if (filtro === 'em-dia' && l.sit !== 'em-dia') return false;
+      if (filtro === 'atrasada' && l.sit !== 'atrasada') return false;
+      return true;
+    }).map(l => {
+      visiveis++;
+      const r = l.reg || {};
+      return `<tr>
+        <td>${l.codigo}</td>
+        <td>${l.nome || ''}</td>
+        <td>${l.programa || ''}</td>
+        <td>${r.data_envio || '<span class="vazio">—</span>'}</td>
+        <td>${r.prazo_resposta || '<span class="vazio">—</span>'}</td>
+        <td>${situacaoHtml(l.sit)}</td>
+        <td>${r.observacoes || '<span class="vazio">—</span>'}</td>
+      </tr>`;
+    }).join('');
+    contadorEl.textContent = visiveis + ' de ' + linhas.length + ' indicadores';
+  }
+
+  Promise.all([
+    fetch(INDICE_URL).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(API_ACOMPANHAMENTO).then(r => r.ok ? r.json() : []).catch(() => []),
+  ]).then(([indice, registros]) => {
+    const porCodigo = {};
+    (registros || []).forEach(r => { if (r && r.codigo) porCodigo[r.codigo] = r; });
+    linhas = (indice || []).map(item => {
+      const reg = porCodigo[item.codigo] || null;
+      return { ...item, reg, sit: situacaoDe(reg) };
+    });
+    if (!linhas.length) {
+      avisoEl.textContent = 'Nenhum dado encontrado — confirme se ' + INDICE_URL +
+        ' foi publicado e se ' + API_ACOMPANHAMENTO + ' está respondendo (banco D1 vinculado?).';
+      avisoEl.classList.remove('oculto');
+    }
+    montarCards();
+    montarLinhas();
+  });
+
+  buscaEl.addEventListener('input', montarLinhas);
+  filtroEl.addEventListener('change', montarLinhas);
+</script>
+</body></html>

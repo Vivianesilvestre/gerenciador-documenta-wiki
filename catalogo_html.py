@@ -19,8 +19,18 @@ def _esc(v):
     return html.escape("" if v is None else str(v))
 
 
-def _celula(valor, tipo):
+def _celula(valor, tipo, chave=None):
     """Renderiza uma célula conforme o tipo da coluna."""
+    if tipo == "editavel_data":
+        # campo de acompanhamento (Data de envio / Prazo de resposta) — não
+        # vem de `linhas` (Python), é preenchido no navegador via
+        # fetch(api_acompanhamento) e salvo a cada edição; ver bloco JS
+        # gerado só quando `api_acompanhamento` é passado para render().
+        return f'<input type="date" class="ac-input" data-campo="{_esc(chave)}">'
+    if tipo == "editavel_texto":
+        return f'<textarea class="ac-input ac-obs" rows="1" placeholder="—" data-campo="{_esc(chave)}"></textarea>'
+    if tipo == "calculado_situacao":
+        return f'<span class="ac-situacao" data-campo="{_esc(chave)}">—</span>'
     if tipo == "link":
         # valor = (texto, url) ou lista de (texto, url)
         pares = valor if isinstance(valor, list) else [valor]
@@ -251,11 +261,217 @@ def render_painel(path, relatorios, *, titulo="Documenta Wiki (MDS) · Painel de
     return path
 
 
-def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
-           filtros=None, filtro_labels=None, filtro_dependencias=None, filtro_opcoes_fixas=None):
+def render_dashboard_acompanhamento(path, *, titulo="Acompanhamento de Demandas · Documenta Wiki (MDS)",
+                                     indice_url="indicadores_indice.json",
+                                     api_acompanhamento="/api/acompanhamento"):
     """
-    colunas: lista de {"key","label","tipo"}  tipo in {text,link,tags,long}
+    Página 100% client-side (não recebe `linhas` do Python — ao contrário de
+    render(), aqui os dados só existem no navegador de quem abre a página):
+    ao carregar, busca `indice_url` (manifesto estático {codigo,nome,programa,
+    status_programa} de todos os indicadores, gerado por
+    gravar_indice_indicadores) e `api_acompanhamento` (registros salvos via
+    Cloudflare Pages Function + D1: data_envio, prazo_resposta, observacoes)
+    e cruza os dois pelo campo "codigo".
+
+    Mostra cards (total de indicadores, fichas atribuídas = com Data de envio
+    preenchida, Em dia, Atrasada, sem prazo definido) e uma tabela com uma
+    linha por indicador, com filtro por situação e busca por texto.
+
+    Diferença importante em relação à coluna "Situação da demanda" do
+    relatório de Indicadores (catalogo_html.render): lá a comparação usa a
+    data de GERAÇÃO daquele relatório; aqui, como é um dashboard para
+    consultar a qualquer momento, a comparação usa a data de HOJE (do
+    computador de quem está vendo a página).
+    """
+    doc = f"""<!DOCTYPE html>
+<html lang="pt-br"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{_esc(titulo)}</title>
+<style>
+  :root {{ --navy:{NAVY}; --gold:{GOLD}; }}
+  * {{ box-sizing:border-box; }}
+  body {{ font-family:Arial,Helvetica,sans-serif; margin:0; color:#222; background:#f4f5f7; }}
+  header {{ background:var(--navy); color:#fff; padding:20px 28px; }}
+  header h1 {{ margin:0 0 4px; font-size:20px; }}
+  header p {{ margin:0; font-size:13px; opacity:.9; }}
+  .cards {{ display:flex; gap:16px; flex-wrap:wrap; padding:22px 28px 0; }}
+  .card {{ background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.08);
+           padding:18px 26px; min-width:160px; flex:1; text-align:center; }}
+  .card-valor {{ font-size:32px; font-weight:bold; color:var(--navy); line-height:1.1; }}
+  .card-label {{ font-size:13px; color:#666; margin-top:4px; }}
+  .card.card-atrasada .card-valor {{ color:#B03A2E; }}
+  .card.card-em-dia .card-valor {{ color:#2E7D32; }}
+  .barra {{ padding:16px 28px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }}
+  .barra input[type=search] {{ flex:1; min-width:220px; padding:8px 12px; font-size:14px;
+            border:1px solid #c4c8ce; border-radius:6px; }}
+  .barra select {{ padding:7px 10px; font-size:13px; border:1px solid #c4c8ce; border-radius:6px;
+            background:#fff; color:#333; }}
+  #contador {{ font-size:13px; color:#666; margin-left:auto; white-space:nowrap; }}
+  .wrap {{ padding:16px 28px 40px; }}
+  table {{ width:100%; border-collapse:collapse; background:#fff; font-size:13px;
+           box-shadow:0 1px 3px rgba(0,0,0,.08); }}
+  th {{ background:#eef1f6; color:var(--navy); text-align:left; padding:10px 12px;
+        border-bottom:2px solid var(--navy); }}
+  td {{ padding:9px 12px; border-bottom:1px solid #eceef1; vertical-align:top; }}
+  tr:hover td {{ background:#fafbfd; }}
+  .vazio {{ color:#bbb; }}
+  .oculto {{ display:none; }}
+  .sit {{ display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px;
+          font-weight:bold; color:#666; background:#eef1f6; }}
+  .sit-em-dia {{ color:#2E7D32; background:#e6f4ea; }}
+  .sit-atrasada {{ color:#B03A2E; background:#fbe9e7; }}
+  .aviso {{ padding:24px 28px; color:#888; }}
+</style></head>
+<body>
+<header>
+  <h1>{_esc(titulo)}</h1>
+  <p>Fichas atribuídas, prazos e observações registrados pela equipe · atualizado ao vivo</p>
+</header>
+<div class="cards" id="cards"></div>
+<div class="barra">
+  <input type="search" id="busca" placeholder="Buscar por código, indicador ou programa...">
+  <select id="filtroSituacao">
+    <option value="">Situação da demanda (todas)</option>
+    <option value="atribuida">Atribuída (com data de envio)</option>
+    <option value="nao-atribuida">Não atribuída</option>
+    <option value="em-dia">Em dia</option>
+    <option value="atrasada">Atrasada</option>
+  </select>
+  <span id="contador"></span>
+</div>
+<div class="wrap">
+  <p class="aviso oculto" id="aviso"></p>
+  <table id="tab">
+    <thead><tr>
+      <th>Código</th><th>Indicador</th><th>Programa</th>
+      <th>Data de envio</th><th>Prazo de resposta</th><th>Situação da demanda</th><th>Observações</th>
+    </tr></thead>
+    <tbody id="corpo"></tbody>
+  </table>
+</div>
+<script>
+  const INDICE_URL = {json.dumps(indice_url)};
+  const API_ACOMPANHAMENTO = {json.dumps(api_acompanhamento)};
+
+  const cardsEl = document.getElementById('cards');
+  const corpoEl = document.getElementById('corpo');
+  const contadorEl = document.getElementById('contador');
+  const buscaEl = document.getElementById('busca');
+  const filtroEl = document.getElementById('filtroSituacao');
+  const avisoEl = document.getElementById('aviso');
+
+  function situacaoDe(reg) {{
+    if (!reg || !reg.prazo_resposta) return null;
+    const prazo = new Date(reg.prazo_resposta + 'T00:00:00');
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    return prazo >= hoje ? 'em-dia' : 'atrasada';
+  }}
+
+  function situacaoHtml(sit) {{
+    if (sit === 'em-dia') return '<span class="sit sit-em-dia">Em dia</span>';
+    if (sit === 'atrasada') return '<span class="sit sit-atrasada">Atrasada</span>';
+    return '<span class="vazio">—</span>';
+  }}
+
+  let linhas = [];
+
+  function montarCards() {{
+    const total = linhas.length;
+    const atribuidas = linhas.filter(l => l.reg && l.reg.data_envio).length;
+    const emDia = linhas.filter(l => l.sit === 'em-dia').length;
+    const atrasadas = linhas.filter(l => l.sit === 'atrasada').length;
+    const cards = [
+      {{ label: 'Indicadores', valor: total, cls: '' }},
+      {{ label: 'Fichas atribuídas', valor: atribuidas, cls: '' }},
+      {{ label: 'Em dia', valor: emDia, cls: 'card-em-dia' }},
+      {{ label: 'Atrasadas', valor: atrasadas, cls: 'card-atrasada' }},
+    ];
+    cardsEl.innerHTML = cards.map(c => `
+      <div class="card ${{c.cls}}">
+        <div class="card-valor">${{c.valor.toLocaleString('pt-BR')}}</div>
+        <div class="card-label">${{c.label}}</div>
+      </div>`).join('');
+  }}
+
+  function montarLinhas() {{
+    const termo = buscaEl.value.trim().toLowerCase();
+    const filtro = filtroEl.value;
+    let visiveis = 0;
+    corpoEl.innerHTML = linhas.filter(l => {{
+      if (termo) {{
+        const alvo = (l.codigo + ' ' + (l.nome || '') + ' ' + (l.programa || '')).toLowerCase();
+        if (!alvo.includes(termo)) return false;
+      }}
+      if (filtro === 'atribuida' && !(l.reg && l.reg.data_envio)) return false;
+      if (filtro === 'nao-atribuida' && (l.reg && l.reg.data_envio)) return false;
+      if (filtro === 'em-dia' && l.sit !== 'em-dia') return false;
+      if (filtro === 'atrasada' && l.sit !== 'atrasada') return false;
+      return true;
+    }}).map(l => {{
+      visiveis++;
+      const r = l.reg || {{}};
+      return `<tr>
+        <td>${{l.codigo}}</td>
+        <td>${{l.nome || ''}}</td>
+        <td>${{l.programa || ''}}</td>
+        <td>${{r.data_envio || '<span class="vazio">—</span>'}}</td>
+        <td>${{r.prazo_resposta || '<span class="vazio">—</span>'}}</td>
+        <td>${{situacaoHtml(l.sit)}}</td>
+        <td>${{r.observacoes || '<span class="vazio">—</span>'}}</td>
+      </tr>`;
+    }}).join('');
+    contadorEl.textContent = visiveis + ' de ' + linhas.length + ' indicadores';
+  }}
+
+  Promise.all([
+    fetch(INDICE_URL).then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch(API_ACOMPANHAMENTO).then(r => r.ok ? r.json() : []).catch(() => []),
+  ]).then(([indice, registros]) => {{
+    const porCodigo = {{}};
+    (registros || []).forEach(r => {{ if (r && r.codigo) porCodigo[r.codigo] = r; }});
+    linhas = (indice || []).map(item => {{
+      const reg = porCodigo[item.codigo] || null;
+      return {{ ...item, reg, sit: situacaoDe(reg) }};
+    }});
+    if (!linhas.length) {{
+      avisoEl.textContent = 'Nenhum dado encontrado — confirme se ' + INDICE_URL +
+        ' foi publicado e se ' + API_ACOMPANHAMENTO + ' está respondendo (banco D1 vinculado?).';
+      avisoEl.classList.remove('oculto');
+    }}
+    montarCards();
+    montarLinhas();
+  }});
+
+  buscaEl.addEventListener('input', montarLinhas);
+  filtroEl.addEventListener('change', montarLinhas);
+</script>
+</body></html>"""
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(doc)
+    return path
+
+
+def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
+           filtros=None, filtro_labels=None, filtro_dependencias=None, filtro_opcoes_fixas=None,
+           chave_linha=None, api_acompanhamento=None):
+    """
+    colunas: lista de {"key","label","tipo"}  tipo in {text,link,tags,long,
+             editavel_data,editavel_texto,calculado_situacao}. Os 3 últimos
+             são campos de ACOMPANHAMENTO (não vêm de `linhas`/Python — são
+             preenchidos e salvos ao vivo no navegador via `api_acompanhamento`,
+             ver abaixo).
     linhas:  lista de dicts com os valores por key
+    chave_linha: key de `linhas` usada para casar cada <tr> com o registro de
+             acompanhamento salvo no banco (ex.: "codigo"). Obrigatório se
+             `api_acompanhamento` for usado.
+    api_acompanhamento: URL da Cloudflare Pages Function (ex.:
+             "/api/acompanhamento") que guarda os campos editáveis. Se
+             informado, a página busca os valores salvos ao abrir (GET) e
+             salva a cada edição (POST, com debounce). "Situação da demanda"
+             é calculada no navegador comparando "Prazo de resposta" com a
+             data de geração deste relatório (`gerado`, já mostrada no
+             cabeçalho) — Em dia se o prazo é igual ou posterior a essa data,
+             Atrasada se for anterior. Sem prazo definido, fica "—".
     filtros: lista de keys que viram um filtro de MÚLTIPLA seleção com busca.
              Pode ser uma key de coluna (text/tags) ou um campo só-para-filtro
              presente nas linhas (ex.: "programa_nome" mesmo que a coluna
@@ -322,14 +538,16 @@ def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
     ths = "".join(f"<th>{_esc(c['label'])}</th>" for c in colunas)
 
     # linhas
+    usa_acompanhamento = bool(chave_linha and api_acompanhamento)
     trs = []
     for ln in linhas:
-        tds = "".join(f"<td data-col=\"{c['key']}\">{_celula(ln.get(c['key']), c['tipo'])}</td>"
+        tds = "".join(f"<td data-col=\"{c['key']}\">{_celula(ln.get(c['key']), c['tipo'], chave=c['key'])}</td>"
                       for c in colunas)
         attrs_filtro = "".join(
             f' data-f-{fk}="{_esc("|".join(map(str, ln.get(fk))) if isinstance(ln.get(fk), list) else ln.get(fk) or "")}"'
             for fk in filtros)
-        trs.append(f'<tr data-busca="{_esc(_texto_busca(ln, colunas))}"{attrs_filtro}>{tds}</tr>')
+        attr_codigo = f' data-codigo="{_esc(ln.get(chave_linha))}"' if usa_acompanhamento else ""
+        trs.append(f'<tr data-busca="{_esc(_texto_busca(ln, colunas))}"{attrs_filtro}{attr_codigo}>{tds}</tr>')
 
     # widgets de filtro (multi-seleção com busca por texto, sem rolar a página —
     # a lista tem rolagem própria dentro do painel, que abre por cima da tabela)
@@ -361,6 +579,85 @@ def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
       </div>
     </div>
   </div>""")
+
+    # bloco JS de acompanhamento (só entra se a página tiver colunas editáveis
+    # ligadas a uma API): carrega os valores salvos ao abrir, calcula
+    # "Situação da demanda" comparando Prazo de resposta com a data de geração
+    # deste relatório, e salva a cada edição (debounce de 600ms por linha).
+    script_acompanhamento = ""
+    if usa_acompanhamento:
+        script_acompanhamento = f"""
+  // Acompanhamento (Data de envio / Prazo de resposta / Situação da demanda /
+  // Observações) — não vem deste relatório estático; é lido e salvo ao vivo
+  // via {api_acompanhamento} (Cloudflare Pages Function + D1).
+  const API_ACOMPANHAMENTO = {json.dumps(api_acompanhamento)};
+  const DATA_RELATORIO_BR = {json.dumps(gerado)};
+
+  function _parseDataBR(s) {{
+    const m = /(\\d{{2}})\\/(\\d{{2}})\\/(\\d{{4}})/.exec(s || '');
+    return m ? new Date(+m[3], +m[2] - 1, +m[1]) : null;
+  }}
+  const dataRelatorio = _parseDataBR(DATA_RELATORIO_BR);
+
+  function atualizarSituacao(tr) {{
+    const prazoInput = tr.querySelector('.ac-input[data-campo="prazo_resposta"]');
+    const situacaoSpan = tr.querySelector('.ac-situacao');
+    if (!prazoInput || !situacaoSpan) return;
+    if (!prazoInput.value) {{
+      situacaoSpan.textContent = '—';
+      situacaoSpan.className = 'ac-situacao';
+      return;
+    }}
+    const prazo = new Date(prazoInput.value + 'T00:00:00');
+    const emDia = !dataRelatorio || prazo >= dataRelatorio;
+    situacaoSpan.textContent = emDia ? 'Em dia' : 'Atrasada';
+    situacaoSpan.className = 'ac-situacao ' + (emDia ? 'ac-em-dia' : 'ac-atrasada');
+  }}
+
+  function carregarAcompanhamento() {{
+    fetch(API_ACOMPANHAMENTO).then(r => r.ok ? r.json() : []).then(registros => {{
+      const porCodigo = {{}};
+      (registros || []).forEach(r => {{ if (r && r.codigo) porCodigo[r.codigo] = r; }});
+      linhas.forEach(tr => {{
+        const reg = porCodigo[tr.dataset.codigo];
+        if (reg) {{
+          tr.querySelectorAll('.ac-input').forEach(input => {{
+            const v = reg[input.dataset.campo];
+            if (v != null) input.value = v;
+          }});
+        }}
+        atualizarSituacao(tr);
+      }});
+    }}).catch(() => {{ linhas.forEach(atualizarSituacao); }});
+  }}
+
+  const _timersSalvar = {{}};
+  function salvarAcompanhamento(tr) {{
+    const codigo = tr.dataset.codigo;
+    if (!codigo) return;
+    clearTimeout(_timersSalvar[codigo]);
+    _timersSalvar[codigo] = setTimeout(() => {{
+      const payload = {{ codigo }};
+      tr.querySelectorAll('.ac-input').forEach(input => {{ payload[input.dataset.campo] = input.value; }});
+      fetch(API_ACOMPANHAMENTO, {{
+        method: 'POST',
+        headers: {{ 'Content-Type': 'application/json' }},
+        body: JSON.stringify(payload)
+      }}).catch(() => {{}});
+    }}, 600);
+  }}
+
+  linhas.forEach(tr => {{
+    tr.querySelectorAll('.ac-input').forEach(input => {{
+      input.addEventListener('input', () => {{
+        if (input.dataset.campo === 'prazo_resposta') atualizarSituacao(tr);
+        salvarAcompanhamento(tr);
+      }});
+    }});
+  }});
+
+  carregarAcompanhamento();
+"""
 
     doc = f"""<!DOCTYPE html>
 <html lang="pt-br"><head><meta charset="utf-8">
@@ -428,6 +725,15 @@ def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
   .ms-aplicar {{ font-size:12px; background:var(--navy); color:#fff; border:none; border-radius:5px;
                padding:5px 10px; cursor:pointer; }}
   .ms-painel.oculto {{ display:none !important; }}
+
+  .ac-input {{ width:100%; min-width:110px; padding:5px 6px; font-size:12px;
+            border:1px solid #c4c8ce; border-radius:5px; font-family:inherit; color:#222; }}
+  .ac-input:focus {{ outline:none; border-color:var(--navy); }}
+  textarea.ac-obs {{ resize:vertical; min-height:30px; }}
+  .ac-situacao {{ display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px;
+            font-weight:bold; color:#666; background:#eef1f6; }}
+  .ac-situacao.ac-em-dia {{ color:#2E7D32; background:#e6f4ea; }}
+  .ac-situacao.ac-atrasada {{ color:#B03A2E; background:#fbe9e7; }}
 </style></head>
 <body>
 <header>
@@ -604,7 +910,7 @@ def render(path, *, titulo, subtitulo, fonte_url, total_origem, colunas, linhas,
   }});
 
   aplicar();
-</script>
+{script_acompanhamento}</script>
 </body></html>"""
     with open(path, "w", encoding="utf-8") as f:
         f.write(doc)

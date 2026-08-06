@@ -1,0 +1,115 @@
+GUIA DE CONFIGURAÇÃO — Acompanhamento de Demandas (Indicadores)
+================================================================
+
+O que isso adiciona ao site já publicado
+-----------------------------------------
+No relatório de Indicadores, 4 colunas novas aparecem no final da tabela:
+Data de envio, Prazo de resposta, Situação da demanda (calculada) e
+Observações. Elas são editáveis direto na página — dão salvos automaticamente
+(sem precisar clicar em nada) e ficam guardadas num banco de dados, não no
+arquivo HTML. Uma nova aba "Acompanhamento" no painel mostra o total de
+fichas atribuídas, quantas estão em dia/atrasadas, e uma tabela com todos os
+indicadores.
+
+Nada disso muda a autenticação do site: continua sendo o mesmo login por
+e-mail (Cloudflare Access) que já existe hoje.
+
+Esta configuração é feita UMA VEZ, direto no seu painel da Cloudflare (você
+logada como você mesma). Eu não peço nem preciso do seu token/senha da
+Cloudflare para nada disso — os passos abaixo são só cliques no Dashboard.
+
+Depois de configurado, o dia a dia não muda: você continua rodando
+Publicar_no_site.bat como sempre.
+
+
+PASSO 1 — Criar o banco de dados (Cloudflare D1)
+--------------------------------------------------
+1. Acesse https://dash.cloudflare.com e entre na sua conta.
+2. No menu lateral, vá em "Workers & Pages" -> aba "D1 SQL Database"
+   (ou busque "D1" na busca do topo).
+3. Clique em "Create database".
+4. Nome do banco: acompanhamento-indicadores (pode usar outro nome, só
+   lembre dele para o Passo 3).
+5. Clique em "Create".
+
+
+PASSO 2 — Criar a tabela dentro do banco
+-------------------------------------------
+1. Ainda na página do banco que você criou, abra a aba "Console".
+2. Abra o arquivo schema.sql (está na pasta site_relatorios do projeto) e
+   copie todo o conteúdo dele.
+3. Cole no console do D1 e execute (botão "Run" ou "Execute").
+4. Deve aparecer uma confirmação de que a tabela acompanhamento_indicadores
+   foi criada. Se already existir, não dá erro (o comando usa "CREATE TABLE
+   IF NOT EXISTS").
+
+
+PASSO 3 — Vincular o banco ao site (Pages Functions)
+-------------------------------------------------------
+1. Em "Workers & Pages", abra o seu projeto do site (o mesmo que já está
+   publicado com o Cloudflare Access).
+2. Vá em "Settings" -> "Functions".
+3. Procure a seção "D1 database bindings" e clique em "Add binding".
+4. Preencha:
+   - Variable name: DB   <-- tem que ser exatamente "DB" (maiúsculo), é o
+     nome que o código em functions/api/acompanhamento.js espera.
+   - D1 database: selecione o banco criado no Passo 1
+     (acompanhamento-indicadores).
+5. Marque para aplicar em "Production" e também em "Preview" (senão os
+   deploys de teste ficam sem banco).
+6. Salve.
+
+
+PASSO 4 — Confirmar que o Cloudflare Access já protege /api/*
+-----------------------------------------------------------------
+Isso normalmente já funciona sem nenhuma mudança, porque a política de
+Access existente cobre o domínio inteiro. Só confirme:
+1. Vá em "Zero Trust" -> "Access" -> "Applications".
+2. Abra a aplicação que protege o site dos relatórios.
+3. Veja o "Application domain": se estiver como o domínio completo (ex.:
+   seusite.pages.dev ou seudominio.gov.br, sem um caminho específico depois
+   da barra), o /api/acompanhamento já está coberto — não precisa fazer
+   nada.
+4. Se o domínio da aplicação tiver um caminho restrito (ex.: só
+   "/index.html" ou só "/relatorio_indicadores.html"), adicione uma segunda
+   regra de caminho (ou amplie para o domínio todo) incluindo /api/* — do
+   contrário a API fica bloqueada (ou, pior, sem proteção) por engano.
+
+
+PASSO 5 — Publicar
+----------------------
+Rode Publicar_no_site.bat como sempre. Ele já:
+- gera os relatórios (incluindo o novo indicadores_indice.json e
+  dashboard_acompanhamento.html);
+- envia tudo para o GitHub, incluindo functions/api/acompanhamento.js e
+  schema.sql (que já estão na pasta site_relatorios) — isso só acontece de
+  verdade na primeira vez que você rodar o .bat depois desta configuração;
+- a Cloudflare publica a nova versão em 1-2 minutos, já com a API ativa.
+
+
+PASSO 6 — Testar
+--------------------
+1. Abra o site, entre na aba "Indicadores".
+2. Em qualquer linha, preencha "Data de envio" e "Prazo de resposta" e
+   escreva algo em "Observações".
+3. Recarregue a página (F5): os valores devem continuar lá (prova que
+   salvou no banco, não só na tela).
+4. Abra a aba "Acompanhamento": o indicador que você editou deve aparecer
+   com "Fichas atribuídas" contando ele, e a situação (Em dia/Atrasada)
+   calculada a partir do prazo que você preencheu.
+
+
+Se der erro
+--------------
+- Mensagem "Banco D1 'DB' não está vinculado a este projeto Pages.": volte
+  ao Passo 3, confira se o nome da variável é exatamente "DB" e se marcou
+  Production (não só Preview).
+- A página carrega mas os campos não salvam (sem mensagem de erro visível):
+  abra o DevTools do navegador (F12) -> aba "Network", edite um campo e veja
+  a chamada para /api/acompanhamento — o código de status e a resposta
+  costumam apontar o problema (401/403 = Access bloqueando; 500 = banco não
+  vinculado ou tabela não criada).
+- A aba "Acompanhamento" mostra o aviso de "Nenhum dado encontrado": confirme
+  se indicadores_indice.json foi mesmo publicado (abra
+  seusite.../indicadores_indice.json direto no navegador — deve mostrar uma
+  lista) e se /api/acompanhamento responde (mesma ideia, abra a URL direto).

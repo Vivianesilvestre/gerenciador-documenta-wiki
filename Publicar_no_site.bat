@@ -36,6 +36,8 @@ if errorlevel 1 (
 echo.
 echo Passo 2/3: copiando os arquivos para a pasta do site...
 copy /y "dashboard.html" "site_relatorios\dashboard.html" >nul
+copy /y "dashboard_acompanhamento.html" "site_relatorios\dashboard_acompanhamento.html" >nul
+copy /y "indicadores_indice.json" "site_relatorios\indicadores_indice.json" >nul
 copy /y "relatorio_indicadores.html" "site_relatorios\relatorio_indicadores.html" >nul
 copy /y "relatorio_programas.html" "site_relatorios\relatorio_programas.html" >nul
 copy /y "relatorio_base_dados.html" "site_relatorios\relatorio_base_dados.html" >nul

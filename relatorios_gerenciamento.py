@@ -502,6 +502,19 @@ CAMPOS_CSV_INDICADORES = ["codigo", "nome", "programa", "codigo_programa", "stat
                            "responsavel_atualizacao", "data_atualizacao", "url"]
 
 
+def gravar_indice_indicadores(linhas, arquivo="indicadores_indice.json"):
+    """Manifesto leve (sem nomes de responsáveis) usado só pelo dashboard de
+    acompanhamento (site_relatorios/functions), para cruzar com os registros
+    salvos em /api/acompanhamento pelo campo 'codigo'. Publicado no site
+    junto dos relatórios (ver Publicar_no_site.bat)."""
+    indice = [{"codigo": r.get("codigo"), "nome": r.get("nome"),
+               "programa": r.get("programa"), "status_programa": r.get("status_programa")}
+              for r in linhas]
+    with open(arquivo, "w", encoding="utf-8") as f:
+        json.dump(indice, f, ensure_ascii=False)
+    return arquivo
+
+
 def gravar_indicadores(linhas, base="relatorio_indicadores"):
     with open(f"{base}.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=CAMPOS_CSV_INDICADORES, extrasaction="ignore")
@@ -511,6 +524,7 @@ def gravar_indicadores(linhas, base="relatorio_indicadores"):
     with open(f"{base}.jsonl", "w", encoding="utf-8") as f:
         for r in linhas:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    gravar_indice_indicadores(linhas)
     catalogo_html.render(
         f"{base}.html",
         titulo="Gerenciamento de Indicadores · Documenta Wiki (MDS)",
@@ -529,6 +543,12 @@ def gravar_indicadores(linhas, base="relatorio_indicadores"):
             {"key": "responsavel_atualizacao", "label": "Última atualização por", "tipo": "text"},
             {"key": "data_atualizacao", "label": "Data", "tipo": "text"},
             {"key": "_link", "label": "Ficha · sintaxe", "tipo": "link"},
+            # acompanhamento (não vem da wiki — editado e salvo ao vivo no
+            # navegador via a API abaixo; ver chave_linha/api_acompanhamento)
+            {"key": "data_envio", "label": "Data de envio", "tipo": "editavel_data"},
+            {"key": "prazo_resposta", "label": "Prazo de resposta", "tipo": "editavel_data"},
+            {"key": "situacao_demanda", "label": "Situação da demanda", "tipo": "calculado_situacao"},
+            {"key": "observacoes", "label": "Observações", "tipo": "editavel_texto"},
         ],
         linhas=[{**r,
                  "_ferramentas": [(l["nome"], l["url"]) for l in r.get("ferramentas_sagicad", [])],
@@ -538,6 +558,8 @@ def gravar_indicadores(linhas, base="relatorio_indicadores"):
                  "publicada", "situacao_sintaxe"],
         filtro_dependencias={"programa": ["status_programa"]},
         filtro_opcoes_fixas={"situacao_ficha": _OPCOES_SITUACAO, "situacao_sintaxe": _OPCOES_SINTAXE},
+        chave_linha="codigo",
+        api_acompanhamento="/api/acompanhamento",
     )
 
 
@@ -915,6 +937,18 @@ def gravar_dashboard(base="dashboard.html"):
     return base
 
 
+def gravar_dashboard_acompanhamento(base="dashboard_acompanhamento.html"):
+    """Página client-side (dados vêm do navegador, não do Python — ver
+    catalogo_html.render_dashboard_acompanhamento) que cruza o manifesto
+    indicadores_indice.json com os registros salvos em /api/acompanhamento.
+    Só faz sentido depois de publicada no site (com o D1 configurado); pode
+    ser gerada/regenerada localmente sem problema, ela só busca os dados ao
+    ser aberta num navegador."""
+    catalogo_html.render_dashboard_acompanhamento(base)
+    print(f"gerado: {base}")
+    return base
+
+
 # ======================= painel (abas) =======================
 _PAINEL_CANDIDATOS = [
     ("dashboard", "Dashboard", "dashboard.html"),
@@ -922,6 +956,7 @@ _PAINEL_CANDIDATOS = [
     ("programas", "Programas", "relatorio_programas.html"),
     ("bd", "Base de Dados", "relatorio_base_dados.html"),
     ("ferramentas", "Ferramentas", "relatorio_ferramentas.html"),
+    ("acompanhamento", "Acompanhamento", "dashboard_acompanhamento.html"),
 ]
 
 
@@ -961,6 +996,7 @@ def main():
 
     if "--dashboard" in args:
         gravar_dashboard()
+        gravar_dashboard_acompanhamento()
         gravar_painel()
         return
 
@@ -1024,6 +1060,7 @@ def main():
             print("gerados: relatorio_ferramentas.csv, .jsonl e .html")
 
     gravar_dashboard()
+    gravar_dashboard_acompanhamento()
     gravar_painel()
 
 

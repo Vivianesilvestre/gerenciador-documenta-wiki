@@ -521,4 +521,41 @@ ESTRUTURA DA WIKI (para entender as saídas)
 Dentro de cada programa há a lista de indicadores. O "código" do programa
 (ex.: NBF, BPC, Cad) é a chave que liga o programa aos seus indicadores e
 aparece em todos os relatórios.
+
+
+ACOMPANHAMENTO DE DEMANDAS (colunas editáveis + dashboard + login)
+--------------------------------------------------------------------
+O relatório de Indicadores agora tem 4 colunas extras, editáveis direto na
+página do navegador (salvam automaticamente, sem botão): Data de envio,
+Prazo de resposta, Situação da demanda (calculada: Em dia/Atrasada) e
+Observações. Uma nova aba "Acompanhamento" no painel mostra o total de
+fichas atribuídas e a situação de cada uma, cruzando esses dados salvos com
+a lista de indicadores.
+
+Esses campos NÃO ficam no HTML nem nos arquivos .csv/.jsonl gerados por este
+projeto — são guardados num banco Cloudflare D1, através de uma API própria
+(functions/api/acompanhamento.js, dentro de site_relatorios), lida e escrita
+pelo navegador de quem estiver usando o site. Continua usando o MESMO login
+por e-mail (Cloudflare Access) que já protege o site — não foi criada
+autenticação nova.
+
+Arquivos novos:
+  - catalogo_html.py: função render() ganhou os tipos de coluna
+    "editavel_data" / "editavel_texto" / "calculado_situacao" e os
+    parâmetros chave_linha/api_acompanhamento; função nova
+    render_dashboard_acompanhamento() gera a página da aba Acompanhamento.
+  - relatorios_gerenciamento.py: gravar_indicadores() agora também escreve
+    indicadores_indice.json (manifesto leve: código/nome/programa/status,
+    sem nomes de responsáveis) usado só pela aba Acompanhamento; nova
+    gravar_dashboard_acompanhamento() gera dashboard_acompanhamento.html.
+  - site_relatorios/schema.sql: cria a tabela acompanhamento_indicadores.
+  - site_relatorios/functions/api/acompanhamento.js: API (GET lista, POST
+    salva um registro) usada pelas páginas acima.
+  - GUIA_ACOMPANHAMENTO.txt: passo a passo (uma única vez) para criar o
+    banco D1, vincular ao site e confirmar que o Access cobre /api/* — tudo
+    feito no seu painel da Cloudflare, sem precisar passar nenhum token
+    para este assistente.
+
+CONFIGURAÇÃO: veja GUIA_ACOMPANHAMENTO.txt (uma única vez). Depois disso,
+o dia a dia continua sendo só Publicar_no_site.bat.
 ========================================================================
